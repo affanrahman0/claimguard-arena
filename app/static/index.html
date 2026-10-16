@@ -1,0 +1,2659 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ClaimGuard Arena · AI Multi-Agent Fraud Defense & Adversary Arena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070b14;
+      --bg-alt: #0c1222;
+      --panel: #111a30;
+      --panel-hover: #16223f;
+      --panel-glass: rgba(17, 26, 48, 0.78);
+      --border: #1e2c4f;
+      --border-bright: #2d4175;
+      --text: #f0f4ff;
+      --text-muted: #8a9fc7;
+      --text-dim: #54678f;
+      --cyan: #00d4ff;
+      --cyan-glow: rgba(0, 212, 255, 0.25);
+      --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.25);
+      --amber: #f59e0b;
+      --amber-glow: rgba(245, 158, 11, 0.25);
+      --red: #ef4444;
+      --red-glow: rgba(239, 68, 68, 0.25);
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.25);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+      --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      background-image: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 212, 255, 0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(168, 85, 247, 0.08), transparent);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      background: rgba(12, 18, 34, 0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00d4ff 0%, #3b82f6 50%, #8b5cf6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--cyan-glow);
+    }
+    .brand-icon svg { width: 22px; height: 22px; fill: white; }
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(120deg, #ffffff 40%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: block;
+    }
+    .header-pills {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      background: rgba(17, 26, 48, 0.6);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .status-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+    .status-pill.mock .dot { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+
+    nav.nav-bar {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      background: none;
+      border: 0;
+      border-bottom: 2.5px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nav-btn:hover { color: var(--text); }
+    .nav-btn.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    main.app-main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    .card {
+      background: var(--panel-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      position: relative;
+    }
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .card-title svg { width: 17px; height: 17px; color: var(--cyan); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    @media(max-width: 1080px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width: 640px) {
+      .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #00d4ff, #0088ff);
+      color: #031525;
+      font-family: var(--font-heading);
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px var(--cyan-glow);
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1.5px);
+      box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+      filter: brightness(1.1);
+    }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .btn-alt {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border-bright);
+      box-shadow: none;
+    }
+    .btn-alt:hover:not(:disabled) {
+      background: var(--panel-hover);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      filter: none;
+    }
+    .btn-purple {
+      background: linear-gradient(135deg, #a855f7, #6366f1);
+      color: #ffffff;
+      box-shadow: 0 4px 14px var(--purple-glow);
+    }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    select, input, textarea {
+      background: var(--bg-alt);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+    }
+
+    /* Samples Grid */
+    .samples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .sample-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .sample-card:hover {
+      border-color: var(--cyan);
+      background: var(--panel-hover);
+      transform: translateY(-2px);
+    }
+    .sample-card.selected {
+      border-color: var(--cyan);
+      background: rgba(0, 212, 255, 0.08);
+      box-shadow: 0 0 16px rgba(0, 212, 255, 0.2);
+    }
+    .sample-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .sample-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .tag-clean { background: rgba(16, 185, 129, 0.15); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .tag-decoy { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .tag-policy { background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .tag-ring { background: rgba(239, 68, 68, 0.15); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    .sample-title {
+      font-family: var(--font-heading);
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .sample-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Photo Preview Card */
+    .claim-photo-wrap {
+      position: relative;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      max-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .claim-photo-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s;
+    }
+    .claim-photo-img:hover {
+      transform: scale(1.03);
+    }
+    .photo-overlay-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(11, 16, 32, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .photo-duplicate-alert {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(239, 68, 68, 0.9);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Timeline & Steps */
+    .agent-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .timeline-step {
+      background: rgba(12, 18, 34, 0.7);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      animation: stepIn 0.3s ease both;
+    }
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateX(-6px); }
+      to { opacity: 1; transform: none; }
+    }
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .step-name {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-time {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .step-summary {
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    /* Verdict Card & Gauge */
+    .verdict-box {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+    .verdict-box.fast_track {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .verdict-box.investigate {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    .verdict-box.escalate {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .risk-score-circle {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    }
+    .score-val { font-size: 30px; line-height: 1; }
+    .score-max { font-size: 10.5px; opacity: 0.7; font-family: var(--font-mono); }
+
+    .score-clean { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 2px solid var(--green); }
+    .score-warn { background: rgba(245, 158, 11, 0.2); color: var(--amber); border: 2px solid var(--amber); }
+    .score-danger { background: rgba(239, 68, 68, 0.2); color: var(--red); border: 2px solid var(--red); }
+
+    .verdict-badge {
+      display: inline-block;
+      font-family: var(--font-heading);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 5px;
+    }
+    .badge-fast_track { background: var(--green); color: #022c1d; }
+    .badge-investigate { background: var(--amber); color: #3b2202; }
+    .badge-escalate { background: var(--red); color: #3b050b; }
+
+    .verdict-reason {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .signals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .signal-item {
+      background: rgba(12, 18, 34, 0.6);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .sig-name {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sig-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+    .sig-weight {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--amber);
+      white-space: nowrap;
+      background: rgba(245, 158, 11, 0.12);
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      height: fit-content;
+    }
+
+    .graph-container {
+      background: #090e1b;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      position: relative;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+    .graph-legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    table.data-table th, table.data-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    table.data-table th {
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    table.data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .kpi-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--cyan);
+    }
+    .kpi-card.green::before { background: var(--green); }
+    .kpi-card.amber::before { background: var(--amber); }
+    .kpi-card.purple::before { background: var(--purple); }
+    .kpi-label {
+      font-size: 11.5px;
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .kpi-value {
+      font-family: var(--font-heading);
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+    .kpi-sub { font-size: 11.5px; color: var(--text-dim); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .badge-cyan { background: rgba(0, 212, 255, 0.15); color: var(--cyan); }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+    .badge-red { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+    .badge-purple { background: rgba(168, 85, 247, 0.15); color: var(--purple); }
+
+    .audit-trail {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .audit-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      padding: 6px 10px;
+      background: var(--bg-alt);
+      border-radius: 5px;
+      border-left: 3px solid var(--cyan);
+    }
+    .audit-actor { font-weight: 600; color: var(--cyan); text-transform: uppercase; }
+
+    .progress-wrap {
+      background: var(--bg);
+      border-radius: 999px;
+      height: 8px;
+      overflow: hidden;
+      margin: 8px 0;
+      border: 1px solid var(--border);
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #00d4ff, #8b5cf6);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Expandable Accordion Panels */
+    .expandable-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-top: 14px;
+      transition: all 0.25s ease;
+    }
+    .expandable-panel:hover {
+      border-color: rgba(0, 212, 255, 0.4);
+    }
+    .expandable-panel-header {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.02);
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+    .expandable-panel-header:hover {
+      background: rgba(0, 212, 255, 0.06);
+    }
+    .expand-icon {
+      display: inline-block;
+      transition: transform 0.25s ease;
+      font-size: 11px;
+      color: var(--cyan);
+    }
+    .expandable-panel.open .expand-icon {
+      transform: rotate(90deg);
+    }
+    .expandable-panel-body {
+      padding: 18px 20px;
+      border-top: 1px solid var(--border);
+      background: #090e1b;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* File Upload Dropzone */
+    .dropzone-box {
+      border: 2px dashed rgba(0, 212, 255, 0.35);
+      background: rgba(0, 212, 255, 0.02);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .dropzone-box:hover, .dropzone-box.dragover {
+      border-color: var(--cyan);
+      background: rgba(0, 212, 255, 0.08);
+      transform: translateY(-1px);
+    }
+    .upload-tab-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-tab-btn.active {
+      background: rgba(0, 212, 255, 0.15);
+      color: var(--cyan);
+      border-color: rgba(0, 212, 255, 0.4);
+    }
+
+    .callout {
+      background: rgba(0, 212, 255, 0.05);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13.5px;
+      color: var(--text);
+      margin-bottom: 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .callout-icon { font-size: 18px; flex-shrink: 0; line-height: 1.2; }
+    .callout b { color: var(--cyan); }
+
+    .sub-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .sub-tab-btn {
+      background: none;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sub-tab-btn.active {
+      background: rgba(0, 212, 255, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+    }
+
+    /* Modal / Dossier */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(4, 7, 15, 0.88);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; animation: fadeIn 0.2s ease; }
+    .modal-window {
+      background: #0f162a;
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 960px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
+      position: relative;
+    }
+    .modal-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: #0f162a;
+      z-index: 10;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .modal-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .modal-body { padding: 22px; }
+    .dossier-section {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .dossier-sec-title {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .car-blueprint {
+      background: #060a14;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        </div>
+        <div>
+          <span class="brand-title">ClaimGuard Arena</span>
+          <span class="brand-subtitle">Autonomous BFSI Multi-Agent Fraud Defense & Adversary Arena</span>
+        </div>
+      </a>
+      <div class="header-pills">
+        <div class="status-pill" id="pill-llm"><span class="dot"></span> <span id="mode-text">LLM: Initializing…</span></div>
+        <div class="status-pill"><span class="dot" style="background:var(--green)"></span> 2,000+ Claims DB Ready</div>
+        <div class="status-pill"><span class="dot" style="background:var(--purple)"></span> Google Cloud Run Ready</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="nav-bar">
+    <button class="nav-btn active" data-tab="tab-defender">🛡️ Defender Studio</button>
+    <button class="nav-btn" data-tab="tab-attacker">⚔️ Attacker Lab</button>
+    <button class="nav-btn" data-tab="tab-arena">🏟️ Arena Benchmark</button>
+    <button class="nav-btn" data-tab="tab-intake">✍️ File & Extract Claim (DocAI)</button>
+    <button class="nav-btn" data-tab="tab-architecture">📐 Architecture & Problem Statement</button>
+  </nav>
+
+  <main class="app-main">
+
+    <!-- ================= TAB 1: DEFENDER STUDIO ================= -->
+    <section id="tab-defender" class="tab-content active">
+      <div class="callout">
+        <div class="callout-icon">💡</div>
+        <div>
+          <b>How the Defender works:</b> An incoming claim is routed through 4 autonomous agents: 
+          <b>Intake</b> (integrity) → <b>Policy</b> (clauses 3.1–5.2) → <b>Fraud & Link Engine</b> (history link analysis + multimodal consistency) → <b>Decision</b> (risk scoring).
+          Click any showcase claim below to analyze in real time, or click <b>"Inspect Full Dossier"</b> to examine every photo, policy clause, and repair line!
+        </div>
+      </div>
+
+      <!-- Quick Showcase Claim Cards -->
+      <div class="card-title">Select Showcase Claim (Demo Samples)</div>
+      <div class="samples-grid" id="samples-container"></div>
+
+      <!-- Search any claim or analyze button -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <input type="text" id="manual-claim-id" placeholder="Or type any Claim ID (e.g. CLM-00012 or CLM-USER-XXXX)..." style="flex:1; min-width:240px;">
+          <button class="btn" id="btn-analyze">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Analyze Claim with Defender
+          </button>
+        </div>
+      </div>
+
+      <!-- Analysis Results Container: SIDE-BY-SIDE (Submitted Claim vs AI Findings) -->
+      <div id="defender-results" style="display:none;">
+        <div class="grid-2">
+          
+          <!-- LEFT COLUMN: The Submitted Claim Package (Customer & Garage Input) -->
+          <div class="card" style="border-color:#2a3b66;">
+            <div class="card-title" style="color:#60a5fa; border-bottom:1px solid var(--border); padding-bottom:8px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              1. Original Submitted Claim (Customer File)
+            </div>
+
+            <!-- Actual Evidence Photo -->
+            <div class="claim-photo-wrap" id="def-photo-wrap">
+              <img src="" id="def-photo-img" class="claim-photo-img" alt="Submitted Claim Vehicle Photo">
+              <div class="photo-overlay-badge">📷 Attached Damage Photograph</div>
+              <div class="photo-duplicate-alert" id="def-duplicate-alert" style="display:none;">
+                ⚠️ DUPLICATE PHOTO DETECTED IN CLAIM HISTORY!
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="font-size:12px; color:var(--text-muted);" id="def-photo-caption"></span>
+              <span class="badge badge-purple" style="font-family:var(--font-mono); font-size:11px;" id="def-photo-hash"></span>
+            </div>
+
+            <!-- Vehicle Damage Schematic -->
+            <div id="def-blueprint-wrap" style="margin-bottom:14px;"></div>
+
+            <!-- Narrative / Statement -->
+            <div style="background:var(--bg-alt); padding:12px; border-radius:6px; border:1px solid var(--border); margin-bottom:14px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">
+                Claimant's Written Accident Statement
+              </div>
+              <div id="def-narrative" style="color:var(--text); font-style:italic; font-size:13px;"></div>
+            </div>
+
+            <!-- Metadata Details -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12.5px; background:var(--bg); padding:12px; border-radius:6px; margin-bottom:14px;">
+              <div><b>Claim ID:</b> <span id="def-claim-id" style="font-family:var(--font-mono); color:var(--cyan);"></span></div>
+              <div><b>Policy ID:</b> <span id="def-policy-id" style="font-family:var(--font-mono);"></span></div>
+              <div><b>Incident Date:</b> <span id="def-incident-date"></span></div>
+              <div><b>Damage Type:</b> <span id="def-damage-badge" class="badge badge-cyan"></span></div>
+              <div><b>Workshop:</b> <span id="def-workshop-name"></span></div>
+              <div><b>Bank Account:</b> <span id="def-bank-acc" style="font-family:var(--font-mono);"></span></div>
+            </div>
+
+            <!-- Itemized Invoice -->
+            <div class="card-title" style="font-size:13px; margin-bottom:8px;">Garage Repair Invoice Breakdown</div>
+            <table class="data-table" id="def-items-table" style="margin-bottom:10px;">
+              <thead><tr><th>Part / Repair Operation</th><th style="text-align:right;">Estimate ($)</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:rgba(0, 212, 255, 0.08); border-radius:6px; border:1px solid rgba(0, 212, 255, 0.2);">
+              <span style="font-weight:700;">Total Payout Requested:</span>
+              <span style="font-family:var(--font-heading); font-size:18px; font-weight:800; color:var(--cyan);" id="def-amount-claimed">$0.00</span>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: AI Derivations & Findings Report -->
+          <div class="card">
+            <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="display:flex; align-items:center; gap:8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                2. AI Derivations & Risk Assessment
+              </span>
+              <button class="btn btn-sm btn-alt" id="btn-view-dossier-def">
+                🔍 Full Forensic Dossier
+              </button>
+            </div>
+
+            <!-- Verdict Banner & Score -->
+            <div id="verdict-banner" class="verdict-box">
+              <div class="risk-score-circle" id="verdict-circle">
+                <span class="score-val" id="score-val">0</span>
+                <span class="score-max">/ 100</span>
+              </div>
+              <div>
+                <span class="verdict-badge" id="verdict-badge">Fast Track</span>
+                <div class="verdict-reason" id="verdict-reason">Reasoning will appear here.</div>
+              </div>
+            </div>
+
+            <!-- Multi-Agent Pipeline Execution Timeline -->
+            <div class="card-title" style="font-size:13px; margin-top:16px;">Agent Execution Pipeline</div>
+            <div class="agent-timeline" id="agent-timeline"></div>
+
+            <!-- Detected Red Flags & Signals -->
+            <div class="card-title" style="font-size:13px; margin-top:18px;">Detected Fraud & Policy Signals</div>
+            <div class="signals-list" id="signals-list"></div>
+
+            <!-- Network Collusion Link Graph -->
+            <div id="link-graph-box" style="display:none; margin-top:18px;">
+              <div class="card-title" style="margin-bottom:6px; font-size:13px;">
+                Network Link Analysis (Entity Collusion Graph)
+              </div>
+              <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+                Connected entities found in history: shared repair garage, phones, bank accounts, or recycled photos.
+              </p>
+              <div class="graph-container">
+                <div id="graph-svg-wrap"></div>
+                <div class="graph-legend">
+                  <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Current Claim</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#00d4ff"></span> Linked Claims</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Bank Account</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Phone</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#a855f7"></span> Photo Hash</div>
+                  <div class="legend-item"><span class="legend-dot" style="background:#8a9fc7"></span> Workshop</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Human Adjuster Actions -->
+            <div style="background:var(--bg-alt); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border); margin-top:18px;">
+              <div style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px;">
+                Human-in-the-Loop Adjuster Console
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-alt" style="border-color:var(--green); color:var(--green);" data-action="approve">✓ Approve Payout</button>
+                <button class="btn btn-sm btn-alt" style="border-color:var(--amber); color:var(--amber);" data-action="override">⚡ Adjuster Override</button>
+                <button class="btn btn-sm btn-alt" style="border-color:var(--red); color:var(--red);" data-action="escalate">🚨 Escalate to SIU</button>
+              </div>
+              <div class="audit-trail" id="audit-trail"></div>
+            </div>
+
+        </div>
+
+        <!-- ================= TWO EXPANDABLE WINDOWS ================= -->
+        <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          
+          <!-- Expandable Window 1: Detailed Claim Specifications -->
+          <div class="expandable-panel" id="panel-claim-details">
+            <div class="expandable-panel-header" onclick="toggleExpandPanel('claim-details')">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="expand-icon" id="icon-claim-details">▶</span>
+                <div style="text-align:left;">
+                  <div style="font-weight:700; color:var(--cyan); font-size:14px; display:flex; align-items:center; gap:6px;">
+                    <span>📋</span> Detailed Claim Dossier & Specifications
+                  </div>
+                  <div style="font-size:11.5px; color:var(--text-muted);">Expand to inspect full metadata, claimant contact, & garage invoice</div>
+                </div>
+              </div>
+              <span class="badge badge-cyan" id="badge-claim-panel-toggle">Click to Expand</span>
+            </div>
+            <div class="expandable-panel-body" id="body-claim-details" style="display:none;">
+              <div id="content-claim-details"></div>
+            </div>
+          </div>
+
+          <!-- Expandable Window 2: Underlying Insurance Policy Contract -->
+          <div class="expandable-panel" id="panel-policy-details">
+            <div class="expandable-panel-header" onclick="toggleExpandPanel('policy-details')">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="expand-icon" id="icon-policy-details">▶</span>
+                <div style="text-align:left;">
+                  <div style="font-weight:700; color:#10b981; font-size:14px; display:flex; align-items:center; gap:6px;">
+                    <span>🛡️</span> Underlying Policy Contract & Terms
+                  </div>
+                  <div style="font-size:11.5px; color:var(--text-muted);">Expand to cross-verify policy clauses, active term, and deductibles</div>
+                </div>
+              </div>
+              <span class="badge" id="badge-policy-panel-toggle">Click to Expand</span>
+            </div>
+            <div class="expandable-panel-body" id="body-policy-details" style="display:none;">
+              <div id="content-policy-details"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: ATTACKER LAB ================= -->
+    <section id="tab-attacker" class="tab-content">
+      <div class="callout">
+        <div class="callout-icon">⚔️</div>
+        <div>
+          <b>Adversarial Red-Teaming:</b> The Attacker generates <b>synthetic</b> fraudulent claims designed to evade traditional rule checks.
+          Test the Defender against subtle tricks like invoice padding, contradictory damage descriptions, or stealth duplicate claims!
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">Configure Adversarial Attack</div>
+        <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+          <div style="flex:1; min-width:220px;">
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">Attack Vector Type</label>
+            <select id="attack-type-select" style="width:100%;"></select>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:20px;">
+            <input type="checkbox" id="attack-stealth" style="width:18px; height:18px; cursor:pointer;">
+            <label for="attack-stealth" style="font-weight:600; cursor:pointer;">
+              Stealth Variant <span class="badge badge-purple" style="margin-left:4px;">Subtler / Harder to Catch</span>
+            </label>
+          </div>
+          <div style="margin-top:20px;">
+            <button class="btn btn-purple" id="btn-launch-attack">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              Launch Synthetic Attack
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Battle Output: Split View -->
+      <div id="attack-results" style="display:none;">
+        <div class="card" style="margin-bottom:20px; border-color:var(--purple);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+              <span class="badge badge-purple" id="attack-type-badge">Attack: invoice_tamper</span>
+              <h2 style="font-family:var(--font-heading); font-size:18px; margin-top:6px;" id="attack-intent-title">Attack Intent</h2>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div id="attack-verdict-pill"></div>
+              <button class="btn btn-sm btn-alt" id="btn-view-dossier-atk">
+                🔍 Inspect Attack Dossier
+              </button>
+            </div>
+          </div>
+          <p style="font-size:13px; color:var(--text-muted); margin-top:8px;" id="attack-intent-desc"></p>
+        </div>
+
+        <div id="attack-case-view"></div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: ARENA BENCHMARK ================= -->
+    <section id="tab-arena" class="tab-content">
+      <div class="callout">
+        <div class="callout-icon">🏟️</div>
+        <div>
+          <b>Continuous Evaluation & Defense Evolution:</b> Run a comprehensive tournament comparing the Defender against a batch of synthetic attacks,
+          honest claims, and the planted fraud ring. For every claim that slips through, the AI suggests an actionable rule improvement!
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">Run Benchmark Evaluation</div>
+        <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+          <div>
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Attacks per Type</label>
+            <input type="number" id="arena-per-type" value="8" min="2" max="20" style="width:100px;">
+          </div>
+          <div>
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Honest Claims Sample</label>
+            <input type="number" id="arena-n-legit" value="40" min="10" max="100" style="width:110px;">
+          </div>
+          <div style="margin-top:20px;">
+            <button class="btn" id="btn-run-arena">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Start Arena Benchmark
+            </button>
+          </div>
+          <div style="flex:1; margin-top:20px; min-width:200px;">
+            <span id="arena-prog-label" style="font-size:13px; color:var(--cyan); font-weight:600;"></span>
+            <div class="progress-wrap"><div class="progress-bar" id="arena-progress"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scoreboard Container -->
+      <div id="arena-scoreboard"></div>
+    </section>
+
+    <!-- ================= TAB 4: FILE & EXTRACT CLAIM (DOCAI) ================= -->
+    <section id="tab-intake" class="tab-content">
+      <div class="callout">
+        <div class="callout-icon">📄</div>
+        <div>
+          <b>Document Intelligence & Custom Claim Intake:</b> You can either <b>(1) Upload / Extract an unstructured document</b> (police report, tow invoice, email) 
+          or <b>(2) Fill out a custom claim form with photo attachment</b> to test the Defender against your own custom scenarios!
+        </div>
+      </div>
+
+      <!-- Sub-Tabs Header -->
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" data-sub="sub-doc-extract">📄 Option 1: Extract Document / Police Report</button>
+        <button class="sub-tab-btn" data-sub="sub-custom-form">✍️ Option 2: Build & File Custom Claim</button>
+      </div>
+
+      <!-- SUB-TAB 1: DOCUMENT EXTRACTION -->
+      <div id="sub-doc-extract" class="sub-tab-content">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Raw Incident Report / Form Text</div>
+            <div style="margin-bottom:12px;">
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:6px;">Load Sample Unstructured Document</label>
+              <select id="doc-sample-select" style="width:100%;">
+                <option value="police">Police First Information Report (Collision with Barrier - $2,450.00)</option>
+                <option value="tow">Tow Truck & Garage Dispatch Note (CityFix Motors Decoy - $1,800.00)</option>
+                <option value="driver">Driver Email Notification (Rear-End Collision - $2,850.00)</option>
+              </select>
+            </div>
+            <textarea id="doc-text" rows="11" style="width:100%; font-family:var(--font-mono); font-size:13px;"></textarea>
+            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+              <label class="btn btn-sm btn-alt" style="cursor:pointer;">
+                📁 Upload Text File
+                <input type="file" id="doc-file-upload" accept=".txt,.log,.json" style="display:none;">
+              </label>
+              <button class="btn" id="btn-extract-doc">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                Extract Structured Entities
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Extracted Structured Claim</div>
+            <div id="extracted-fields-box">
+              <p style="color:var(--text-muted); font-size:13px;">Click "Extract Structured Entities" to parse the document.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 2: CUSTOM CLAIM BUILDER -->
+      <div id="sub-custom-form" class="sub-tab-content" style="display:none;">
+        <div class="card">
+          <div class="card-title">File a Custom Claim (Interactive Form)</div>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:18px;">
+            Construct your own insurance claim from scratch. Choose an honest workshop or a fraud ring workshop, specify damages, attach an evidence photo, and submit it directly to the Defender.
+          </p>
+
+          <div class="grid-3" style="margin-bottom:16px;">
+            <div>
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Policy ID</label>
+              <input type="text" id="cust-policy" value="POL-CUSTOM-77" style="width:100%;">
+            </div>
+            <div>
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Damage Type</label>
+              <select id="cust-damage-type" style="width:100%;">
+                <option value="collision">Collision (Covered)</option>
+                <option value="glass">Glass Breakage (Covered)</option>
+                <option value="vandalism">Vandalism (Covered)</option>
+                <option value="theft">Theft (Covered)</option>
+                <option value="fire">Fire Damage (Covered)</option>
+                <option value="flood">Flood Damage (Covered)</option>
+                <option value="wear_and_tear">Wear and Tear (EXCLUDED Clause 4.1)</option>
+                <option value="mechanical_breakdown">Mechanical Breakdown (EXCLUDED Clause 4.2)</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Repair Workshop</label>
+              <select id="cust-workshop" style="width:100%;"></select>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-bottom:16px;">
+            <div>
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Claim Amount ($)</label>
+              <input type="number" id="cust-amount" value="2450.00" step="50" style="width:100%;">
+            </div>
+            <div>
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Incident Date</label>
+              <input type="date" id="cust-date" value="2026-06-15" style="width:100%;">
+            </div>
+            <div>
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Policy Coverage Status</label>
+              <select id="cust-policy-status" style="width:100%;">
+                <option value="active">Active & In-Period (Valid)</option>
+                <option value="expired">Expired Policy (Clause 5.1 Violation)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Photo Attachment Selector & Live Device Upload -->
+          <div style="background:var(--bg); border:1px solid var(--border); padding:16px; border-radius:var(--radius-sm); margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div style="font-size:12px; font-weight:700; color:var(--cyan); text-transform:uppercase;">
+                📷 Attached Damage Photograph Evidence
+              </div>
+              <!-- Upload Mode Switch Tabs -->
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="upload-tab-btn active" id="tab-btn-upload-file">📤 Upload From Computer</button>
+                <button type="button" class="upload-tab-btn" id="tab-btn-preset-file">🖼️ Choose Preset Catalog</button>
+              </div>
+            </div>
+
+            <div class="grid-2" style="align-items:center;">
+              <div>
+                <!-- MODE 1: Computer Upload Dropzone -->
+                <div id="upload-mode-file">
+                  <div class="dropzone-box" id="cust-dropzone">
+                    <input type="file" id="cust-file-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                    <div style="font-size:24px; margin-bottom:6px;">📁</div>
+                    <div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:2px;">
+                      Drag & Drop crash photo here or <span style="color:var(--cyan); text-decoration:underline;">browse</span>
+                    </div>
+                    <div style="font-size:11.5px; color:var(--text-muted);">Supports PNG, JPG, WEBP (Instant Digital Fingerprinting)</div>
+                  </div>
+                  <div id="upload-file-status" style="margin-top:8px; font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+                    <span id="upload-filename-label">No custom file selected yet (using sample)</span>
+                    <span class="badge badge-cyan" id="upload-hash-badge" style="display:none; font-family:var(--font-mono); font-size:10.5px;"></span>
+                  </div>
+                </div>
+
+                <!-- MODE 2: Preset Catalog Dropdown -->
+                <div id="upload-mode-preset" style="display:none;">
+                  <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Select Vehicle Damage Photo</label>
+                  <select id="cust-photo-select" style="width:100%; margin-bottom:8px;">
+                    <option value="/static/images/front_collision.jpg">Front Bumper Impact (Silver Sedan)</option>
+                    <option value="/static/images/rear_collision.jpg">Rear End Smash (White Focus)</option>
+                    <option value="/static/images/side_collision.jpg">Side Swipe & Door Scrapes (Grey Outback)</option>
+                    <option value="/static/images/glass_crack.jpg">Windshield Stone Chip Crack</option>
+                    <option value="/static/images/vandalism_scratch.jpg">Keyed Paint Vandalism Scratch</option>
+                    <option value="/static/images/wear_and_tear.jpg">Worn Tyre / Wheel Degradation (Excluded)</option>
+                    <option value="/static/images/ring_reused.jpg">⚠️ Fraud Syndicate Recycled Photo (Apex Auto)</option>
+                  </select>
+                </div>
+
+                <div style="margin-top:10px;">
+                  <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Photo Inspection Caption</label>
+                  <input type="text" id="cust-caption" value="Photo shows damage to the front bumper and right headlamp." style="width:100%;">
+                </div>
+              </div>
+
+              <!-- Live Photo Preview -->
+              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="position:relative; border-radius:8px; overflow:hidden; border:1px solid var(--border); box-shadow:0 4px 15px rgba(0,0,0,0.4);">
+                  <img src="/static/images/front_collision.jpg" id="cust-photo-preview" style="height:140px; width:220px; object-fit:cover; display:block;">
+                  <div class="photo-overlay-badge" id="cust-photo-badge">📷 Attached Evidence</div>
+                </div>
+                <div style="font-size:11px; color:var(--text-dim); margin-top:6px; font-family:var(--font-mono);" id="cust-preview-dim">
+                  Preview Active · Ready to Submit
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:16px;">
+            <div>
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Payout Bank Account</label>
+              <select id="cust-bank-select" style="width:100%; margin-bottom:8px;">
+                <option value="custom">Enter Custom Bank Account...</option>
+                <option value="SYN-ACC-R001">SYN-ACC-R001 (Shared by Apex Fraud Ring!)</option>
+                <option value="SYN-ACC-R002">SYN-ACC-R002 (Shared by Apex Fraud Ring!)</option>
+              </select>
+              <input type="text" id="cust-bank-val" value="SYN-ACC-USER77" style="width:100%;">
+            </div>
+            <div>
+              <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Claimant Phone Number</label>
+              <select id="cust-phone-select" style="width:100%; margin-bottom:8px;">
+                <option value="custom">Enter Custom Phone...</option>
+                <option value="SYN-PH-R001">SYN-PH-R001 (Shared by Apex Fraud Ring!)</option>
+                <option value="SYN-PH-R002">SYN-PH-R002 (Shared by Apex Fraud Ring!)</option>
+              </select>
+              <input type="text" id="cust-phone-val" value="SYN-PH-USER77" style="width:100%;">
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <label style="font-size:12px; color:var(--text-muted); display:block; margin-bottom:4px;">Accident Description / Narrative</label>
+            <textarea id="cust-narrative" rows="3" style="width:100%;">I braked late in heavy traffic and struck the vehicle ahead; the front bumper took the impact.</textarea>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:12px;">
+            <button class="btn" id="btn-submit-custom-claim" style="font-size:15px; padding:12px 24px;">
+              🚀 File & Analyze Claim with Defender
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 5: ARCHITECTURE & RUBRIC ================= -->
+    <section id="tab-architecture" class="tab-content">
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">BFSI Hackathon Solution Alignment</div>
+        <p style="color:var(--text-muted); margin-bottom:16px;">
+          How ClaimGuard Arena maps directly to the Google Cloud AI Builder Cup BFSI Problem Statement:
+        </p>
+
+        <div class="grid-3" style="margin-bottom:20px;">
+          <div style="background:var(--bg-alt); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-weight:700; color:var(--cyan); margin-bottom:6px;">1. Multi-Agent Reasoning</div>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Uses <b>Gemini on Vertex AI</b> for multimodal consistency analysis between police narrative, photo descriptions, and itemized repair estimates.
+            </p>
+          </div>
+          <div style="background:var(--bg-alt); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-weight:700; color:var(--green); margin-bottom:6px;">2. Zero False Positives (Decoy)</div>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Explicitly models legitimate high-volume repair shops (CityFix Motors) to ensure busy businesses are cleared rather than wrongly penalized.
+            </p>
+          </div>
+          <div style="background:var(--bg-alt); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-weight:700; color:var(--purple); margin-bottom:6px;">3. Adversarial Red-Teaming</div>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Solves the LLM evaluation problem by pitting an automated AI Attacker against the Defender in a continuous benchmarking Arena.
+            </p>
+          </div>
+        </div>
+
+        <div class="card-title">Google Cloud Architecture</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Component</th><th>Google Cloud Technology</th><th>Role in Solution</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>Agent Orchestration</b></td><td>Cloud Run (Python / FastAPI)</td><td>Microservice container hosting the multi-agent pipeline and evaluator.</td></tr>
+            <tr><td><b>LLM & Multimodal AI</b></td><td>Gemini 2.5 on Vertex AI</td><td>Deep consistency checks, attack narrative generation, and rule synthesis.</td></tr>
+            <tr><td><b>Data Access & Link Analysis</b></td><td>BigQuery / Cloud SQL (SQLite prototype)</td><td>Graph traversal of 2,000+ claims, bank accounts, phones, and photo hashes.</td></tr>
+            <tr><td><b>Document Extraction</b></td><td>Document AI / Gemini 2.5 Flash</td><td>Transforms raw accident reports into structured schema instances.</td></tr>
+            <tr><td><b>Human-in-the-Loop</b></td><td>Cloud Audit Logs & Adjuster Console</td><td>Adjuster approvals, overrides, and immutable compliance audit trail.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= CLAIM EVIDENCE & DOSSIER MODAL ================= -->
+  <div class="modal-backdrop" id="dossier-modal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div>
+          <span class="badge badge-cyan" id="modal-claim-badge">Claim Dossier</span>
+          <h2 style="font-family:var(--font-heading); font-size:18px; margin-top:4px;" id="modal-claim-title">Claim Evidence & Forensic Dossier</h2>
+        </div>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-dossier-content"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- State & Utilities ----------
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const pretty = s => String(s || '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+    const api = async (url, opts) => {
+      const res = await fetch(url, opts);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || res.statusText || 'Request failed');
+      }
+      return res.json();
+    };
+    const post = (url, body) => api(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body || {})
+    });
+
+    let currentCase = null;
+    let attackCase = null;
+    let sampleClaims = [];
+    let workshopsList = [];
+
+    // Helper: Resolve Photo URL with rich categories & rotation across 2000 claims
+    function getClaimPhotoUrl(claim) {
+      if (claim && claim.photo_url) return claim.photo_url;
+      const cid = claim ? claim.claim_id : '';
+      const text = (claim ? (claim.narrative || '') : '').toLowerCase();
+      const hash = claim ? (claim.photo_hash || '') : '';
+      const dtype = (claim ? (claim.damage_type || '') : '').toLowerCase();
+
+      // 1. Planted Fraud Ring deliberately points to identical reused syndicate photo
+      if (hash === 'a1b2c3d4e5f60718' || hash === '9f8e7d6c5b4a3921' || cid.includes('RING')) {
+        return '/static/images/ring_reused.jpg';
+      }
+      // 2. Specific damage categories
+      if (dtype === 'wear_and_tear' || text.includes('tyre') || text.includes('brake')) {
+        return '/static/images/wear_and_tear.jpg';
+      }
+      if (dtype === 'vandalism' || dtype === 'theft' || text.includes('scratch') || text.includes('key')) {
+        return '/static/images/vandalism_scratch.jpg';
+      }
+      if (dtype === 'glass' || text.includes('windshield') || text.includes('window') || text.includes('crack')) {
+        return '/static/images/glass_crack.jpg';
+      }
+      if (cid === 'CLM-HERO-DECOY' || text.includes('side') || text.includes('door') || text.includes('flank')) {
+        return '/static/images/side_collision.jpg';
+      }
+      if (cid === 'CLM-HERO-LAPSED' || text.includes('rear') || text.includes('tail') || text.includes('boot')) {
+        return '/static/images/rear_collision.jpg';
+      }
+      if (text.includes('front') || text.includes('bumper') || text.includes('bonnet')) {
+        return '/static/images/front_collision.jpg';
+      }
+
+      // 3. For the 2,000 synthetic historical claims, rotate photos deterministically so they don't look identical
+      const variants = [
+        '/static/images/front_collision.jpg',
+        '/static/images/rear_collision.jpg',
+        '/static/images/side_collision.jpg'
+      ];
+      let sum = 0;
+      for (let i = 0; i < cid.length; i++) sum = (sum * 31 + cid.charCodeAt(i)) >>> 0;
+      return variants[sum % variants.length];
+    }
+
+    // Toggle Expandable Panels
+    window.toggleExpandPanel = function(panelKey) {
+      const panel = $('#panel-' + panelKey);
+      const body = $('#body-' + panelKey);
+      const toggleBadge = $('#badge-' + panelKey + '-toggle');
+      if (!panel || !body) return;
+
+      const isOpen = panel.classList.contains('open');
+      if (isOpen) {
+        panel.classList.remove('open');
+        body.style.display = 'none';
+        if (toggleBadge) toggleBadge.textContent = 'Click to Expand';
+      } else {
+        panel.classList.add('open');
+        body.style.display = 'block';
+        if (toggleBadge) toggleBadge.textContent = 'Click to Collapse';
+      }
+    };
+
+    // Render Expandable Panel 1: Detailed Claim Dossier
+    function renderClaimDetailsPanel(c) {
+      const el = $('#content-claim-details');
+      if (!el) return;
+      const linesSum = c.line_items.reduce((s, it) => s + it.amount, 0);
+
+      let deltaDays = 0;
+      try {
+        const d1 = new Date(c.incident_date);
+        const d2 = new Date(c.filed_date);
+        deltaDays = Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+      } catch (e) {}
+
+      el.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; font-size:12.5px;">
+          <div style="background:var(--bg-alt); padding:10px 14px; border-radius:6px; border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; margin-bottom:2px;">Unique Claim ID</div>
+            <div style="font-family:var(--font-mono); font-weight:700; color:var(--cyan); font-size:14px;">${esc(c.claim_id)}</div>
+          </div>
+          <div style="background:var(--bg-alt); padding:10px 14px; border-radius:6px; border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; margin-bottom:2px;">Bound Policy Number</div>
+            <div style="font-family:var(--font-mono); font-weight:700; color:#10b981; font-size:14px;">${esc(c.policy_id)}</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12.5px; margin-bottom:14px;">
+          <div><b>Claimant ID:</b> <span style="font-family:var(--font-mono);">${esc(c.claimant_id)}</span></div>
+          <div><b>Contact Phone:</b> <span style="font-family:var(--font-mono);">${esc(c.phone)}</span></div>
+          <div><b>Payout Bank Account:</b> <span style="font-family:var(--font-mono);">${esc(c.bank_account)}</span></div>
+          <div><b>Filing Channel:</b> <span class="badge badge-purple">${esc(c.source || 'Standard FNOL')}</span></div>
+          <div><b>Incident Date:</b> ${esc(c.incident_date)}</div>
+          <div><b>Date Filed:</b> ${esc(c.filed_date)} <span style="font-size:11px; color:var(--text-muted);">(${deltaDays}d delay)</span></div>
+          <div><b>Damage Category:</b> <span class="badge badge-cyan">${pretty(c.damage_type)}</span></div>
+          <div><b>Repair Workshop:</b> <span style="color:var(--cyan);">${esc(c.workshop_id)}</span></div>
+        </div>
+
+        <div style="background:var(--bg-alt); padding:12px; border-radius:6px; border:1px solid var(--border); margin-bottom:14px;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px;">
+            Driver's Official Incident Narrative
+          </div>
+          <div style="font-size:13px; font-style:italic; color:var(--text); line-height:1.4;">
+            "${esc(c.narrative)}"
+          </div>
+        </div>
+
+        <div style="background:var(--bg-alt); padding:12px; border-radius:6px; border:1px solid var(--border); margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">
+              Digital Evidence Fingerprint (pHash)
+            </div>
+            <span class="badge badge-purple" style="font-family:var(--font-mono); font-size:10.5px;">MD5: ${esc(c.photo_hash)}</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-muted);">
+            <b>Inspection Caption:</b> ${esc(c.photo_caption || 'Vehicle damage photo attached.')}
+          </div>
+        </div>
+
+        <div class="card-title" style="font-size:12.5px; margin-bottom:6px;">Full Garage Line Items Breakdown</div>
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>Item / Operation Description</th><th style="text-align:right;">Subtotal ($)</th></tr></thead>
+          <tbody>
+            ${c.line_items.map(it => `
+              <tr>
+                <td>${esc(it.description)}</td>
+                <td style="font-family:var(--font-mono); text-align:right;">$${it.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            <tr style="border-top:2px solid var(--border); font-weight:700;">
+              <td>Total Stated Repair Estimate:</td>
+              <td style="font-family:var(--font-mono); text-align:right; color:var(--cyan);">$${linesSum.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+    }
+
+    // Render Expandable Panel 2: Underlying Insurance Policy Contract
+    async function renderPolicyDetailsPanel(claim, polResult) {
+      const el = $('#content-policy-details');
+      const badge = $('#badge-policy-panel-toggle');
+      if (!el) return;
+
+      let pol = null;
+      try {
+        pol = await api('/api/policies/' + claim.policy_id);
+      } catch (e) {
+        pol = {
+          policy_id: claim.policy_id,
+          start_date: '2026-01-01',
+          end_date: '2026-12-31',
+          coverage_limit: 20000.0,
+          standard_deductible: 500.0,
+          product_tier: 'Comprehensive Motor Shield (Gold Tier)',
+          underwriter: 'ClaimGuard Mutual Underwriting Corp'
+        };
+      }
+
+      const inPeriod = polResult ? polResult.in_period : (claim.incident_date >= pol.start_date && claim.incident_date <= pol.end_date);
+      const isExcluded = polResult ? polResult.excluded : (['wear_and_tear', 'mechanical_breakdown'].includes(claim.damage_type));
+      const withinLimit = polResult ? polResult.within_limit : (claim.amount_claimed <= pol.coverage_limit);
+
+      if (badge) {
+        badge.className = inPeriod && !isExcluded ? 'badge badge-green' : 'badge badge-red';
+        badge.textContent = inPeriod && !isExcluded ? '🟢 Policy Active' : '🔴 Policy Exception';
+      }
+
+      el.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; font-size:12.5px;">
+          <div style="background:var(--bg-alt); padding:10px 14px; border-radius:6px; border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; margin-bottom:2px;">Underwriting Policy ID</div>
+            <div style="font-family:var(--font-mono); font-weight:700; color:#10b981; font-size:14px;">${esc(pol.policy_id)}</div>
+            <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">${esc(pol.product_tier || 'Comprehensive Motor Shield')}</div>
+          </div>
+          <div style="background:var(--bg-alt); padding:10px 14px; border-radius:6px; border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:11px; text-transform:uppercase; margin-bottom:2px;">Coverage Term Status</div>
+            <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+              <span class="badge ${inPeriod ? 'badge-green' : 'badge-red'}">${inPeriod ? '✓ ACTIVE IN-PERIOD' : '✗ LAPSED / OUT OF PERIOD'}</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">${esc(pol.start_date)} to ${esc(pol.end_date)}</div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12.5px; margin-bottom:14px;">
+          <div><b>Policy Underwriter:</b> ${esc(pol.underwriter || 'ClaimGuard Mutual')}</div>
+          <div><b>Aggregate Limit:</b> <span style="font-weight:700; color:var(--cyan);">$${pol.coverage_limit.toLocaleString()}</span></div>
+          <div><b>Standard Deductible:</b> <span style="font-weight:700;">$${(pol.standard_deductible || 500).toLocaleString()}</span></div>
+          <div><b>Net Available Limit:</b> <span style="font-weight:700; color:var(--green);">$${(pol.coverage_limit - (pol.standard_deductible || 500)).toLocaleString()}</span></div>
+        </div>
+
+        <!-- Clause Verification Status -->
+        <div class="card-title" style="font-size:12.5px; margin-bottom:6px;">Statutory Clause Compliance Summary</div>
+        <table class="data-table" style="font-size:12px; margin-bottom:14px;">
+          <thead><tr><th>Policy Clause</th><th>Condition Required</th><th>Evaluation</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>Clause 3.1</b></td>
+              <td>Insured Peril: Accidental physical loss (${pretty(claim.damage_type)})</td>
+              <td><span class="badge ${isExcluded ? 'badge-red' : 'badge-green'}">${isExcluded ? 'EXCLUDED PERIL' : 'COVERED'}</span></td>
+            </tr>
+            <tr>
+              <td><b>Clause 5.1</b></td>
+              <td>Incident Date (${claim.incident_date}) between ${pol.start_date} and ${pol.end_date}</td>
+              <td><span class="badge ${inPeriod ? 'badge-green' : 'badge-red'}">${inPeriod ? 'VALID IN-PERIOD' : 'OUT OF PERIOD'}</span></td>
+            </tr>
+            <tr>
+              <td><b>Clause 5.2</b></td>
+              <td>Claimed Total ($${claim.amount_claimed.toLocaleString()}) ≤ Policy Cap ($${pol.coverage_limit.toLocaleString()})</td>
+              <td><span class="badge ${withinLimit ? 'badge-green' : 'badge-amber'}">${withinLimit ? 'WITHIN LIMIT' : 'EXCEEDS LIMIT'}</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Covered vs Excluded Perils List -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px;">
+          <div style="background:rgba(16, 185, 129, 0.05); padding:10px 12px; border-radius:6px; border:1px solid rgba(16, 185, 129, 0.2);">
+            <div style="font-weight:700; color:var(--green); margin-bottom:4px;">Covered Perils (Clause 3.1)</div>
+            <ul style="padding-left:16px; margin:0; color:var(--text-muted); line-height:1.5;">
+              <li>Collision & Single-Vehicle Impact</li>
+              <li>Windscreen & Auto Glass (No Deductible)</li>
+              <li>Animal Strike & Road Hazards</li>
+              <li>Theft, Vandalism & Fire Damage</li>
+            </ul>
+          </div>
+          <div style="background:rgba(239, 68, 68, 0.05); padding:10px 12px; border-radius:6px; border:1px solid rgba(239, 68, 68, 0.2);">
+            <div style="font-weight:700; color:var(--red); margin-bottom:4px;">Strict Exclusions (Clause 4.1)</div>
+            <ul style="padding-left:16px; margin:0; color:var(--text-muted); line-height:1.5;">
+              <li>Wear & Tear / Age Degradation (Excl 4.1.A)</li>
+              <li>Mechanical / Transmission Overhaul (Excl 4.1.B)</li>
+              <li>Pre-existing Unrepaired Defects (Excl 4.1.C)</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+
+    // ---------- Navigation Tabs ----------
+    $$('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('.nav-btn').forEach(b => b.classList.remove('active'));
+        $$('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const tabId = btn.getAttribute('data-tab');
+        const content = $('#' + tabId);
+        if (content) content.classList.add('active');
+      });
+    });
+
+    // Sub-tabs in DocAI
+    $$('.sub-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const subId = btn.getAttribute('data-sub');
+        $('#sub-doc-extract').style.display = subId === 'sub-doc-extract' ? 'block' : 'none';
+        $('#sub-custom-form').style.display = subId === 'sub-custom-form' ? 'block' : 'none';
+      });
+    });
+
+    // Modal Handlers
+    function openModal() { $('#dossier-modal').classList.add('open'); }
+    function closeModal() { $('#dossier-modal').classList.remove('open'); }
+    $('#modal-close-btn').addEventListener('click', closeModal);
+    $('#dossier-modal').addEventListener('click', e => { if (e.target === $('#dossier-modal')) closeModal(); });
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Photo preview on custom form
+    $('#cust-photo-select').addEventListener('change', e => {
+      $('#cust-photo-preview').src = e.target.value;
+      const val = e.target.value;
+      if (val.includes('front')) $('#cust-caption').value = 'Photo shows damage to the front bumper and headlamp.';
+      else if (val.includes('rear')) $('#cust-caption').value = 'Photo shows impact damage to the rear trunk and taillight.';
+      else if (val.includes('side')) $('#cust-caption').value = 'Photo shows scraped passenger side doors and quarter panel.';
+      else if (val.includes('glass')) $('#cust-caption').value = 'Photo shows windshield stone chip spiderweb crack.';
+      else if (val.includes('ring')) $('#cust-caption').value = 'Photo shows damage to vehicle bodywork (Reused Syndicate Photo).';
+    });
+
+    // ---------- Initialization ----------
+    async function init() {
+      try {
+        const h = await api('/api/health');
+        const modName = h.models && h.models.fast ? h.models.fast : 'Gemini Active';
+        $('#mode-text').textContent = 'LLM: ' + (h.llm_mode === 'gemini' ? `${modName} (Active)` : 'Mock (Zero-Cost / Deterministic)');
+        if (h.llm_mode === 'mock') {
+          $('#pill-llm').classList.add('mock');
+        } else {
+          $('#pill-llm').classList.remove('mock');
+        }
+      } catch (e) {
+        $('#mode-text').textContent = 'Server Offline';
+      }
+
+      // Load showcase samples
+      try {
+        sampleClaims = await api('/api/claims/samples');
+        renderSamples(sampleClaims);
+      } catch (e) {
+        console.error('Failed to load samples', e);
+      }
+
+      // Load workshops
+      try {
+        workshopsList = await api('/api/workshops');
+        if (workshopsList && workshopsList.length > 0) {
+          const wsSelect = $('#cust-workshop');
+          wsSelect.innerHTML = workshopsList.map(w => {
+            let note = '';
+            if (w.workshop_id === 'W005') note = ' (HONEST DECOY)';
+            else if (w.workshop_id === 'W017') note = ' (FRAUD RING)';
+            return `<option value="${w.workshop_id}">${w.workshop_id} · ${esc(w.name)}${note}</option>`;
+          }).join('');
+        }
+      } catch (e) {}
+
+      // Load attack types
+      try {
+        const atypes = await api('/api/attacks/types');
+        $('#attack-type-select').innerHTML = atypes.map(t => `<option value="${t}">${pretty(t)}</option>`).join('');
+      } catch (e) {}
+
+      // Load latest arena run
+      try {
+        const latest = await api('/api/arena/latest');
+        if (latest && latest.attacks) renderArenaScoreboard(latest);
+      } catch (e) {}
+
+      // Pre-fill doc intake
+      loadDocSample('police');
+    }
+
+    // ---------- Render Samples ----------
+    function renderSamples(samples) {
+      const container = $('#samples-container');
+      container.innerHTML = samples.map((s, idx) => {
+        let tagClass = 'tag-clean';
+        if (s.category === 'ring') tagClass = 'tag-ring';
+        else if (s.category === 'policy') tagClass = 'tag-policy';
+        else if (s.category === 'decoy') tagClass = 'tag-decoy';
+
+        return `
+          <div class="sample-card ${idx === 0 ? 'selected' : ''}" data-cid="${esc(s.claim_id)}">
+            <div class="sample-header">
+              <span class="sample-tag ${tagClass}">${esc(s.tag || 'Sample')}</span>
+              <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-dim);">${esc(s.claim_id)}</span>
+            </div>
+            <div class="sample-title">${esc(s.title)}</div>
+            <div class="sample-desc">${esc(s.summary || '')}</div>
+          </div>
+        `;
+      }).join('');
+
+      $$('.sample-card').forEach(card => {
+        card.addEventListener('click', () => {
+          $$('.sample-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          $('#manual-claim-id').value = card.getAttribute('data-cid');
+        });
+      });
+
+      if (samples.length > 0) {
+        $('#manual-claim-id').value = samples[0].claim_id;
+      }
+    }
+
+    // ---------- SVG Link Graph Visualizer ----------
+    function renderGraphSVG(nodes, edges) {
+      if (!nodes || nodes.length <= 1) return '<p style="color:var(--text-muted); font-size:13px;">No external links discovered.</p>';
+      const W = 560, H = 340, cx = W / 2, cy = H / 2;
+      const pos = {};
+
+      const focusNode = nodes.find(n => n.kind === 'claim_focus');
+      if (focusNode) pos[focusNode.id] = [cx, cy];
+
+      const entityNodes = nodes.filter(n => !['claim_focus', 'claim_linked'].includes(n.kind));
+      const linkedClaims = nodes.filter(n => n.kind === 'claim_linked');
+
+      entityNodes.forEach((n, i) => {
+        const angle = (2 * Math.PI * i) / Math.max(entityNodes.length, 1) - Math.PI / 2;
+        pos[n.id] = [cx + 105 * Math.cos(angle), cy + 95 * Math.sin(angle)];
+      });
+
+      linkedClaims.forEach((n, i) => {
+        const angle = (2 * Math.PI * i) / Math.max(linkedClaims.length, 1);
+        pos[n.id] = [cx + 185 * Math.cos(angle) * 1.35, cy + 135 * Math.sin(angle)];
+      });
+
+      const colors = {
+        claim_focus: '#ef4444',
+        claim_linked: '#00d4ff',
+        bank_account: '#f59e0b',
+        phone: '#10b981',
+        photo: '#a855f7',
+        workshop: '#8a9fc7'
+      };
+
+      const lines = edges.filter(e => pos[e.source] && pos[e.target]).map(e => {
+        const [x1, y1] = pos[e.source];
+        const [x2, y2] = pos[e.target];
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#273863" stroke-width="1.8" stroke-dasharray="4 2"/>`;
+      }).join('');
+
+      const circles = nodes.map(n => {
+        const p = pos[n.id] || [cx, cy];
+        const isFocus = n.kind === 'claim_focus';
+        const isLinked = n.kind === 'claim_linked';
+        const r = isFocus ? 13 : (isLinked ? 7 : 9);
+        const col = colors[n.kind] || '#8a9fc7';
+
+        return `
+          <g style="cursor:pointer;" title="${esc(n.kind)}: ${esc(n.label)}">
+            <circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="${col}" stroke="#0b1020" stroke-width="2.5" />
+            ${!isLinked ? `<text x="${p[0]}" y="${p[1] - r - 5}" font-family="var(--font-mono)" font-size="10.5" fill="#e0e7ff" text-anchor="middle" font-weight="600">${esc(n.label.slice(0, 18))}</text>` : ''}
+          </g>
+        `;
+      }).join('');
+
+      return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="320" style="background:#090e1b; border-radius:8px;">${lines}${circles}</svg>`;
+    }
+
+    // ---------- Vehicle Damage Blueprint (SVG) ----------
+    function renderVehicleBlueprint(damageType, narrative, caption) {
+      const text = ((narrative || '') + ' ' + (caption || '')).toLowerCase();
+      let isFront = damageType === 'collision' && (text.includes('front') || text.includes('bumper') || text.includes('radiator') || text.includes('bonnet'));
+      let isRear = damageType === 'collision' && (text.includes('rear') || text.includes('boot') || text.includes('tail'));
+      let isSide = damageType === 'collision' && (text.includes('side') || text.includes('door') || text.includes('mirror'));
+      let isGlass = damageType === 'glass' || text.includes('windshield') || text.includes('window');
+
+      if (!isFront && !isRear && !isSide && !isGlass && damageType === 'collision') isFront = true;
+
+      const hitColor = '#ef4444';
+      const safeColor = '#1e293b';
+
+      return `
+        <div class="car-blueprint">
+          <svg viewBox="0 0 340 160" width="100%" max-width="450" style="max-height:150px;">
+            <rect x="60" y="30" width="220" height="100" rx="20" fill="#0c1222" stroke="#334155" stroke-width="2"/>
+            <rect x="110" y="40" width="120" height="80" rx="12" fill="#131d36" stroke="#475569" stroke-width="1.5"/>
+            <rect x="80" y="16" width="36" height="16" rx="4" fill="#1e293b"/>
+            <rect x="224" y="16" width="36" height="16" rx="4" fill="#1e293b"/>
+            <rect x="80" y="128" width="36" height="16" rx="4" fill="#1e293b"/>
+            <rect x="224" y="128" width="36" height="16" rx="4" fill="#1e293b"/>
+            
+            <path d="M 60 40 L 40 60 L 40 100 L 60 120 Z" fill="${isFront ? hitColor : safeColor}" opacity="${isFront ? '0.85' : '0.4'}" stroke="${isFront ? '#ff7878' : '#334155'}"/>
+            ${isFront ? '<circle cx="48" cy="80" r="10" fill="#ef4444" opacity="0.6"><animate attributeName="r" values="8;14;8" dur="1.5s" repeatCount="indefinite"/></circle>' : ''}
+            
+            <path d="M 280 40 L 300 60 L 300 100 L 280 120 Z" fill="${isRear ? hitColor : safeColor}" opacity="${isRear ? '0.85' : '0.4'}" stroke="${isRear ? '#ff7878' : '#334155'}"/>
+            ${isRear ? '<circle cx="292" cy="80" r="10" fill="#ef4444" opacity="0.6"><animate attributeName="r" values="8;14;8" dur="1.5s" repeatCount="indefinite"/></circle>' : ''}
+            
+            <rect x="120" y="26" width="100" height="10" fill="${isSide ? hitColor : safeColor}" opacity="${isSide ? '0.85' : '0.4'}"/>
+            <rect x="120" y="124" width="100" height="10" fill="${isSide ? hitColor : safeColor}" opacity="${isSide ? '0.85' : '0.4'}"/>
+            
+            <polygon points="120,45 140,45 135,115 115,115" fill="${isGlass ? hitColor : '#1e3a8a'}" opacity="${isGlass ? '0.85' : '0.5'}"/>
+            
+            <text x="50" y="148" font-size="10" fill="${isFront ? '#ef4444' : '#64748b'}" font-weight="700">FRONT</text>
+            <text x="270" y="148" font-size="10" fill="${isRear ? '#ef4444' : '#64748b'}" font-weight="700">REAR</text>
+            <text x="160" y="85" font-size="11" fill="#94a3b8" text-anchor="middle" font-weight="600">CABIN</text>
+          </svg>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:4px;">
+            Impact Zone: <b style="color:${isFront||isRear||isSide||isGlass ? 'var(--cyan)' : 'var(--text)'}">${isFront?'Front Impact':isRear?'Rear Impact':isSide?'Side Swipe':isGlass?'Windshield Glass':'General Damage'}</b>
+          </div>
+        </div>
+      `;
+    }
+
+    // ---------- Build and Show Full Dossier Modal ----------
+    function showDossierModal(caseData) {
+      if (!caseData) return;
+      const c = caseData.claim;
+      const dec = caseData.decision;
+      const pol = caseData.policy;
+      const fr = caseData.fraud;
+      const photoUrl = getClaimPhotoUrl(c);
+
+      $('#modal-claim-badge').textContent = `Claim ${c.claim_id} · ${pretty(dec.recommendation)}`;
+      $('#modal-claim-badge').className = `badge badge-${dec.recommendation === 'fast_track' ? 'green' : dec.recommendation === 'investigate' ? 'amber' : 'red'}`;
+      $('#modal-claim-title').textContent = `Full Evidence Dossier & Policy Verification (${c.claim_id})`;
+
+      const linesHtml = c.line_items.map(it => `
+        <tr>
+          <td><b>${esc(it.description)}</b></td>
+          <td style="font-family:var(--font-mono); text-align:right;">$${it.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+        </tr>
+      `).join('');
+
+      const linesSum = c.line_items.reduce((s, it) => s + it.amount, 0);
+      const isTampered = Math.abs(linesSum - c.amount_claimed) > 1.0;
+      const isReused = fr.signals.some(s => s.type === 'reused_photo') || c.photo_hash === 'a1b2c3d4e5f60718';
+
+      $('#modal-dossier-content').innerHTML = `
+        <!-- Section 1: Attached Vehicle Damage Photograph & Blueprint -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            1. Attached Damage Photograph & Impact Blueprint
+          </div>
+          <div class="grid-2" style="align-items:center; margin-bottom:12px;">
+            <div style="position:relative; border-radius:8px; overflow:hidden; border:1px solid var(--border); background:#000;">
+              <img src="${photoUrl}" style="width:100%; height:200px; object-fit:cover; display:block;">
+              <div class="photo-overlay-badge">📷 Submitted Claim Evidence</div>
+              ${isReused ? '<div class="photo-duplicate-alert">⚠️ REUSED PHOTO DETECTED IN CLAIM HISTORY!</div>' : ''}
+            </div>
+            <div>
+              ${renderVehicleBlueprint(c.damage_type, c.narrative, c.photo_caption)}
+            </div>
+          </div>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div style="background:#060a14; padding:12px; border-radius:6px;">
+              <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Driver's Accident Narrative</div>
+              <div style="font-size:13px; color:var(--text); font-style:italic; margin-top:4px;">"${esc(c.narrative)}"</div>
+            </div>
+            <div style="background:#060a14; padding:12px; border-radius:6px;">
+              <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Photo Forensic Inspection</div>
+              <div style="font-size:13px; color:var(--text); margin-top:4px;">📷 ${esc(c.photo_caption)}</div>
+              <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-top:4px;">
+                MD5 Checksum: ${esc(c.photo_hash)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Policy Contract Clauses -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            2. Policy Contract Clause Verification (${esc(c.policy_id)})
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Clause</th><th>Policy Requirement</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Clause 3.1 / 3.3</b></td>
+                <td>Insured Damage Type (${pretty(c.damage_type)})</td>
+                <td><span class="badge ${pol.excluded ? 'badge-red' : 'badge-green'}">${pol.excluded ? 'EXCLUDED DAMAGE' : 'COVERED'}</span></td>
+              </tr>
+              <tr>
+                <td><b>Clause 5.1</b></td>
+                <td>Incident Date inside Policy Period (${c.incident_date})</td>
+                <td><span class="badge ${pol.in_period ? 'badge-green' : 'badge-red'}">${pol.in_period ? 'VALID / IN-PERIOD' : 'EXPIRED / OUT-OF-PERIOD'}</span></td>
+              </tr>
+              <tr>
+                <td><b>Clause 5.2</b></td>
+                <td>Claim Amount within Limit ($${c.amount_claimed.toLocaleString()})</td>
+                <td><span class="badge ${pol.within_limit ? 'badge-green' : 'badge-amber'}">${pol.within_limit ? 'WITHIN LIMIT' : 'EXCEEDS COVERAGE'}</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="font-size:12.5px; color:var(--text-muted); margin-top:8px;">
+            <b>Policy Verdict:</b> ${esc(pol.explanation)}
+          </div>
+        </div>
+
+        <!-- Section 3: Itemized Repair Invoice Breakdown -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            3. Itemized Repair Invoice & Pricing Anomaly Check
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Repair Line / Replacement Part</th><th style="text-align:right;">Cost ($)</th></tr></thead>
+            <tbody>${linesHtml}</tbody>
+            <tfoot>
+              <tr style="border-top:2px solid var(--border);">
+                <td><b>Sum of Itemized Lines</b></td>
+                <td style="font-family:var(--font-mono); font-weight:700; text-align:right;">$${linesSum.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+              </tr>
+              <tr>
+                <td><b>Total Amount Claimed</b></td>
+                <td style="font-family:var(--font-mono); font-weight:700; text-align:right; color:var(--cyan);">$${c.amount_claimed.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+              </tr>
+            </tfoot>
+          </table>
+          ${isTampered ? `
+            <div style="background:rgba(239, 68, 68, 0.15); border:1px solid rgba(239, 68, 68, 0.3); padding:10px; border-radius:6px; margin-top:10px; color:var(--red); font-size:12.5px;">
+              ⚠️ <b>INVOICE TAMPERING DETECTED:</b> Claimed total ($${c.amount_claimed}) does not match the sum of itemized repair lines ($${linesSum.toFixed(2)}). Discrepancy: $${Math.abs(c.amount_claimed - linesSum).toFixed(2)}.
+            </div>
+          ` : `
+            <div style="color:var(--green); font-size:12.5px; margin-top:8px;">
+              ✓ Itemized lines perfectly balance with the requested payout. Zero arithmetic tampering.
+            </div>
+          `}
+        </div>
+
+        <!-- Section 4: Workshop & Entity Collusion Links -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/></svg>
+            4. Workshop History & Entity Collusion Cross-Check
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px;">
+            <div><b>Repair Workshop:</b> ${esc(c.workshop_id)}</div>
+            <div><b>Payout Bank Account:</b> <span style="font-family:var(--font-mono);">${esc(c.bank_account)}</span></div>
+            <div><b>Claimant Phone:</b> <span style="font-family:var(--font-mono);">${esc(c.phone)}</span></div>
+            <div><b>Workshop Baseline:</b> ${esc(fr.baseline_note || 'Standard profile.')}</div>
+          </div>
+        </div>
+
+        <!-- Section 5: Adjuster Decision & Full Reasoning -->
+        <div class="dossier-section" style="margin-bottom:0;">
+          <div class="dossier-sec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            5. Decision Agent Recommendation & Reasoning
+          </div>
+          <div style="font-size:14px; font-weight:700; margin-bottom:6px; color:${dec.risk_score < 30 ? 'var(--green)' : dec.risk_score <= 60 ? 'var(--amber)' : 'var(--red)'};">
+            Risk Score: ${dec.risk_score} / 100 · Recommendation: ${pretty(dec.recommendation)}
+          </div>
+          <p style="font-size:13.5px; color:var(--text); line-height:1.5;">${esc(dec.reasoning)}</p>
+        </div>
+      `;
+      openModal();
+    }
+
+    $('#btn-view-dossier-def').addEventListener('click', () => showDossierModal(currentCase));
+    $('#btn-view-dossier-atk').addEventListener('click', () => showDossierModal(attackCase));
+
+    // ---------- Render Defender Case (Split View) ----------
+    async function renderCaseResult(caseData, container) {
+      currentCase = caseData;
+      const c = caseData.claim;
+      const dec = caseData.decision;
+      const fr = caseData.fraud;
+      const photoUrl = getClaimPhotoUrl(c);
+
+      $('#defender-results').style.display = 'block';
+
+      // 1. Fill Left Column (Original Submitted Claim Package)
+      $('#def-photo-img').src = photoUrl;
+      $('#def-photo-caption').textContent = '📷 ' + (c.photo_caption || 'Evidence Photo');
+      $('#def-photo-hash').textContent = 'MD5: ' + (c.photo_hash || '').slice(0, 10);
+      
+      const isReused = fr.signals.some(s => s.type === 'reused_photo') || c.photo_hash === 'a1b2c3d4e5f60718';
+      $('#def-duplicate-alert').style.display = isReused ? 'flex' : 'none';
+
+      $('#def-blueprint-wrap').innerHTML = renderVehicleBlueprint(c.damage_type, c.narrative, c.photo_caption);
+      $('#def-narrative').textContent = `"${c.narrative}"`;
+      $('#def-claim-id').textContent = c.claim_id;
+      $('#def-policy-id').textContent = c.policy_id;
+      $('#def-incident-date').textContent = c.incident_date;
+      $('#def-damage-badge').textContent = pretty(c.damage_type);
+      $('#def-workshop-name').textContent = c.workshop_id;
+      $('#def-bank-acc').textContent = c.bank_account;
+      $('#def-amount-claimed').textContent = '$' + c.amount_claimed.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+      const tbody = $('#def-items-table tbody');
+      tbody.innerHTML = c.line_items.map(it => `
+        <tr>
+          <td>${esc(it.description)}</td>
+          <td style="font-family:var(--font-mono); text-align:right;">$${it.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+        </tr>
+      `).join('');
+
+      // 2. Fill Right Column (AI Derivations & Verdict)
+      const tl = $('#agent-timeline');
+      tl.innerHTML = '';
+      for (const ev of caseData.events) {
+        const step = document.createElement('div');
+        step.className = 'timeline-step';
+        step.innerHTML = `
+          <div class="step-header">
+            <span class="step-name">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              ${esc(ev.agent)} Agent
+            </span>
+            <span class="step-time">${ev.ms} ms</span>
+          </div>
+          <div class="step-summary">${esc(ev.summary)}</div>
+        `;
+        tl.appendChild(step);
+        await sleep(150);
+      }
+
+      const score = dec.risk_score;
+      const banner = $('#verdict-banner');
+      banner.className = 'verdict-box ' + dec.recommendation;
+
+      const circle = $('#verdict-circle');
+      circle.className = 'risk-score-circle ' + (score < 30 ? 'score-clean' : score <= 60 ? 'score-warn' : 'score-danger');
+      $('#score-val').textContent = score;
+
+      const badge = $('#verdict-badge');
+      badge.className = 'verdict-badge badge-' + dec.recommendation;
+      badge.textContent = pretty(dec.recommendation);
+      $('#verdict-reason').textContent = dec.reasoning;
+
+      // Signals List
+      const sigList = $('#signals-list');
+      const allSignals = [...caseData.policy.signals, ...caseData.fraud.signals].sort((a,b) => b.weight - a.weight);
+      if (allSignals.length === 0) {
+        sigList.innerHTML = '<div style="color:var(--green); font-size:12.5px; padding:6px 0;">✓ Zero high-risk fraud or policy signals detected. Claim qualifies for instant settlement.</div>';
+      } else {
+        sigList.innerHTML = allSignals.map(s => `
+          <div class="signal-item">
+            <div>
+              <div class="sig-name">
+                <span class="badge ${s.severity === 'high' ? 'badge-red' : 'badge-amber'}">${esc(s.severity).toUpperCase()}</span>
+                ${pretty(s.type)}
+              </div>
+              <div class="sig-desc">${esc(s.evidence)}</div>
+            </div>
+            <div class="sig-weight">+${s.weight}</div>
+          </div>
+        `).join('');
+      }
+
+      // Link Graph
+      const graphBox = $('#link-graph-box');
+      if (caseData.fraud.nodes && caseData.fraud.nodes.length > 1) {
+        graphBox.style.display = 'block';
+        $('#graph-svg-wrap').innerHTML = renderGraphSVG(caseData.fraud.nodes, caseData.fraud.edges);
+      } else {
+        graphBox.style.display = 'none';
+      }
+
+      loadAudit(caseData.case_id);
+
+      // Populate Expandable Window 1 (Full Claim Dossier) & Window 2 (Policy Contract Terms)
+      renderClaimDetailsPanel(c);
+      renderPolicyDetailsPanel(c, caseData.policy);
+    }
+
+    async function loadAudit(caseId) {
+      try {
+        const audits = await api(`/api/cases/${caseId}/audit`);
+        const el = $('#audit-trail');
+        if (!audits || audits.length === 0) {
+          el.innerHTML = '<span style="font-size:11.5px; color:var(--text-dim);">No adjuster actions logged yet.</span>';
+          return;
+        }
+        el.innerHTML = audits.map(a => `
+          <div class="audit-item">
+            <div><span class="audit-actor">${esc(a.actor)}</span>: ${esc(a.event)} ${a.detail && a.detail.note ? `("${esc(a.detail.note)}")` : ''}</div>
+            <div style="color:var(--text-dim); font-size:11px;">${new Date(a.ts).toLocaleTimeString()}</div>
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
+    // Adjuster Action Buttons
+    $$('[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!currentCase) return;
+        const action = btn.getAttribute('data-action');
+        try {
+          btn.disabled = true;
+          await post(`/api/cases/${currentCase.case_id}/decision`, { action, note: 'Adjuster review recorded from UI console.' });
+          await loadAudit(currentCase.case_id);
+        } catch (e) {
+          alert('Action failed: ' + e.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    });
+
+    // Analyze Claim Button
+    $('#btn-analyze').addEventListener('click', async () => {
+      const cid = $('#manual-claim-id').value.trim();
+      if (!cid) return alert('Please enter or select a Claim ID');
+      const btn = $('#btn-analyze');
+      btn.disabled = true;
+      btn.innerHTML = 'Analyzing...';
+      try {
+        const res = await post('/api/cases/analyze', { claim_id: cid });
+        await renderCaseResult(res, $('#defender-results'));
+      } catch (e) {
+        alert('Analysis error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Analyze Claim with Defender`;
+      }
+    });
+
+    // ---------- TAB 2: ATTACKER LAB ----------
+    $('#btn-launch-attack').addEventListener('click', async () => {
+      const atype = $('#attack-type-select').value;
+      const stealth = $('#attack-stealth').checked;
+      const btn = $('#btn-launch-attack');
+      btn.disabled = true;
+      btn.innerHTML = 'Launching Attack...';
+
+      try {
+        const res = await post('/api/attacks/launch', { attack_type: atype, stealth });
+        attackCase = res.case;
+        $('#attack-results').style.display = 'block';
+
+        $('#attack-type-badge').textContent = `Attack: ${pretty(res.attack.attack_type)} ${res.attack.stealth ? '· STEALTH' : ''}`;
+        $('#attack-intent-title').textContent = res.attack.claim.claim_id + ': ' + res.attack.intent;
+        $('#attack-intent-desc').textContent = `Injected Payload: $${res.attack.claim.amount_claimed.toLocaleString()} (${pretty(res.attack.claim.damage_type)}) · Narrative: "${res.attack.claim.narrative}"`;
+
+        const pill = $('#attack-verdict-pill');
+        if (res.caught) {
+          pill.innerHTML = `<span class="badge badge-green" style="font-size:13px; padding:5px 12px;">🛡️ DEFENDER CAUGHT IT (${pretty(res.case.decision.recommendation)})</span>`;
+        } else {
+          pill.innerHTML = `<span class="badge badge-red" style="font-size:13px; padding:5px 12px;">⚠️ MISSED / FAST-TRACKED (Stealth Evasion)</span>`;
+        }
+
+        // Render full case in attack view
+        await renderCaseResult(res.case, $('#attack-case-view'));
+      } catch (e) {
+        alert('Attack generation error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Launch Synthetic Attack';
+      }
+    });
+
+    // ---------- TAB 3: ARENA BENCHMARK ----------
+    function renderArenaScoreboard(r) {
+      const pct = v => Math.round((v || 0) * 100) + '%';
+      const rows = Object.entries(r.attacks || {}).map(([t, a]) => `
+        <tr>
+          <td><b>${pretty(t)}</b></td>
+          <td>${a.caught} / ${a.total}</td>
+          <td><span class="badge ${a.catch_rate >= 0.75 ? 'badge-green' : 'badge-amber'}">${pct(a.catch_rate)}</span></td>
+          <td>${a.stealth_caught} / ${a.stealth_total} (${pct(a.stealth_total ? a.stealth_caught/a.stealth_total : 0)})</td>
+        </tr>
+      `).join('');
+
+      const missRows = (r.misses || []).map(m => `
+        <tr>
+          <td style="font-family:var(--font-mono);">${esc(m.claim_id)}</td>
+          <td>${pretty(m.attack_type)} ${m.stealth ? '<span class="badge badge-purple">Stealth</span>' : ''}</td>
+          <td><span style="color:var(--green); font-weight:700;">${m.risk_score}</span></td>
+          <td style="color:var(--cyan); font-size:12.5px;">${esc(m.suggestion)}</td>
+        </tr>
+      `).join('');
+
+      $('#arena-scoreboard').innerHTML = `
+        <div class="grid-4" style="margin-bottom:20px;">
+          <div class="kpi-card green">
+            <div class="kpi-label">Overall Catch Rate</div>
+            <div class="kpi-value">${pct(r.overall_catch_rate)}</div>
+            <div class="kpi-sub">Adversary detection rate</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Honest False Positives</div>
+            <div class="kpi-value">${pct(r.legit.false_positive_rate)}</div>
+            <div class="kpi-sub">${r.legit.flagged}/${r.legit.total} honest claims flagged</div>
+          </div>
+          <div class="kpi-card amber">
+            <div class="kpi-label">Decoy Workshop Cleared</div>
+            <div class="kpi-value">${r.decoy.cleared} / ${r.decoy.total}</div>
+            <div class="kpi-sub">CityFix Motors (High Volume)</div>
+          </div>
+          <div class="kpi-card purple">
+            <div class="kpi-label">Fraud Ring Recall</div>
+            <div class="kpi-value">${r.ring.flagged} / ${r.ring.total}</div>
+            <div class="kpi-sub">Apex Auto Works syndicate</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-title">Performance by Attack Vector</div>
+          <table class="data-table">
+            <thead><tr><th>Attack Vector</th><th>Caught / Total</th><th>Catch Rate</th><th>Stealth Variant Detection</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">AI Defense Evolution (Missed Attacks & Suggested Rules)</div>
+          ${missRows ? `
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">When a stealth attack slips through, Gemini analyzes the failure and suggests concrete rules to close the defense gap:</p>
+            <table class="data-table">
+              <thead><tr><th>Claim ID</th><th>Attack Type</th><th>Risk Score</th><th>AI Suggested New Rule</th></tr></thead>
+              <tbody>${missRows}</tbody>
+            </table>
+          ` : '<p style="color:var(--green); font-size:13px;">Outstanding! Zero attacks slipped through the defense perimeter.</p>'}
+        </div>
+      `;
+    }
+
+    $('#btn-run-arena').addEventListener('click', async () => {
+      const per = +$('#arena-per-type').value || 8;
+      const legit = +$('#arena-n-legit').value || 40;
+      const btn = $('#btn-run-arena');
+      btn.disabled = true;
+
+      try {
+        await post('/api/arena/run', { per_type: per, n_legit: legit });
+        while (true) {
+          const s = await api('/api/arena/status');
+          if (s.status === 'running') {
+            const pct = s.total ? Math.round((s.done / s.total) * 100) : 0;
+            $('#arena-prog-label').textContent = `Running Battle Simulation... ${s.done} / ${s.total} (${pct}%)`;
+            $('#arena-progress').style.width = pct + '%';
+          } else if (s.status === 'done') {
+            $('#arena-prog-label').textContent = 'Tournament Complete!';
+            $('#arena-progress').style.width = '100%';
+            renderArenaScoreboard(await api('/api/arena/latest'));
+            break;
+          } else if (s.status === 'error') {
+            $('#arena-prog-label').textContent = 'Error: ' + s.error;
+            break;
+          }
+          await sleep(650);
+        }
+      } catch (e) {
+        alert('Arena error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    // ---------- TAB 4: DOC INTAKE & CUSTOM FORM ----------
+    const SAMPLES_DOC = {
+      police: `FIRST INFORMATION REPORT / ACCIDENT INCIDENT SUMMARY
+Station: Metro Traffic Division | Incident Date: 2026-06-15
+Reporting Officer: Insp. D. Vance
+
+Driver Statement:
+At approx 14:30 hrs, vehicle traveling along Outer Ring Road experienced heavy braking by lead vehicle. 
+Driver swerved and collided into concrete roadside barrier with front bumper taking direct impact.
+Damage Observed: Crushed front bumper, broken right headlamp assembly, crumpled radiator support.
+
+Insured Policy No: POL-CLM-9001
+Estimated Repair Cost: $2,450.00
+Assigned Workshop: City Garage W010
+Claimant Payout Account: SYN-ACC-009001
+Contact Phone: SYN-PH-009001`,
+
+      tow: `VEHICLE RECOVERY & TOWING DISPATCH SHEET
+Tow Operator: CityFix Motors (W005)
+Incident Timestamp: 2026-06-14 09:15 AM
+Vehicle towed from junction of Grand Ave following side swipe impact.
+Policy: POL-CLM-9002
+Estimated bodywork repair total: $1,800.00
+Damage: Side door panel repair, side mirror replacement.
+Owner Phone: SYN-PH-009002
+Bank Account for direct repair settlement: SYN-ACC-009002`,
+
+      driver: `Dear Claims Department,
+I am submitting a motor insurance claim for my car which was hit from behind while waiting at a red light on 2026-06-16.
+Policy Number: POL-CLM-9003
+Damage: Rear bumper replacement, boot lid repair, paint and refinishing.
+Amount: $2,850.00
+Repair Shop: W021
+My phone: SYN-PH-009003
+Account: SYN-ACC-009003`
+    };
+
+    function loadDocSample(key) {
+      $('#doc-text').value = SAMPLES_DOC[key] || '';
+    }
+    $('#doc-sample-select').addEventListener('change', e => loadDocSample(e.target.value));
+
+    $('#doc-file-upload').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => { $('#doc-text').value = ev.target.result; };
+        reader.readAsText(file);
+      }
+    });
+
+    $('#cust-bank-select').addEventListener('change', e => {
+      if (e.target.value !== 'custom') $('#cust-bank-val').value = e.target.value;
+    });
+    $('#cust-phone-select').addEventListener('change', e => {
+      if (e.target.value !== 'custom') $('#cust-phone-val').value = e.target.value;
+    });
+
+    let lastExtractedFields = null;
+
+    $('#btn-extract-doc').addEventListener('click', async () => {
+      const text = $('#doc-text').value.trim();
+      if (!text) return alert('Please enter or select document text');
+      const btn = $('#btn-extract-doc');
+      btn.disabled = true;
+      btn.innerHTML = 'Extracting...';
+
+      try {
+        const res = await post('/api/extract', { text });
+        lastExtractedFields = res.fields;
+        const f = res.fields;
+        $('#extracted-fields-box').innerHTML = `
+          <div style="background:var(--bg-alt); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+              <span class="badge badge-green">✓ Extracted Successfully</span>
+              <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">${esc(res.source)}</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px; margin-bottom:14px;">
+              <div><b>Policy ID:</b> <span style="font-family:var(--font-mono);">${esc(f.policy_id)}</span></div>
+              <div><b>Incident Date:</b> ${esc(f.incident_date)}</div>
+              <div><b>Damage Type:</b> <span class="badge badge-cyan">${pretty(f.damage_type)}</span></div>
+              <div><b>Claimed Total:</b> <span style="color:var(--cyan); font-weight:700;">$${f.amount_claimed.toLocaleString(undefined, {minimumFractionDigits: 2})}</span></div>
+              <div><b>Workshop:</b> ${esc(f.workshop_id)}</div>
+              <div><b>Bank Account:</b> <span style="font-family:var(--font-mono);">${esc(f.bank_account)}</span></div>
+            </div>
+            <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:14px;">
+              <b>Extracted Narrative:</b> "${esc(f.narrative)}"
+            </div>
+            <button class="btn btn-sm" id="btn-send-to-defender" style="width:100%;">
+              🛡️ Submit & Route Directly to Defender Pipeline
+            </button>
+          </div>
+        `;
+
+        $('#btn-send-to-defender').addEventListener('click', async () => {
+          if (!lastExtractedFields) return;
+          const sendBtn = $('#btn-send-to-defender');
+          sendBtn.disabled = true;
+          sendBtn.innerHTML = 'Submitting to Defender...';
+
+          try {
+            const createRes = await post('/api/claims/create', {
+              policy_id: lastExtractedFields.policy_id || 'POL-EXTRACTED',
+              workshop_id: lastExtractedFields.workshop_id || 'W010',
+              damage_type: lastExtractedFields.damage_type || 'collision',
+              amount_claimed: lastExtractedFields.amount_claimed || 2450.0,
+              incident_date: lastExtractedFields.incident_date || '2026-06-15',
+              narrative: lastExtractedFields.narrative,
+              bank_account: lastExtractedFields.bank_account,
+              phone: lastExtractedFields.phone,
+              policy_active: true
+            });
+
+            $$('.nav-btn')[0].click();
+            $('#manual-claim-id').value = createRes.claim.claim_id;
+            await renderCaseResult(createRes.case, $('#defender-results'));
+          } catch (e) {
+            alert('Failed to submit claim: ' + e.message);
+          } finally {
+            sendBtn.disabled = false;
+          }
+        });
+      } catch (e) {
+        alert('Extraction error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg> Extract Structured Entities`;
+      }
+    });
+
+    // ---------- Live Photo Upload & Dropzone Handling ----------
+    let uploadedPhotoUrl = null;
+    let uploadedPhotoHash = null;
+
+    // Toggle between Computer Upload and Preset Catalog
+    const tabUploadFile = $('#tab-btn-upload-file');
+    const tabPresetFile = $('#tab-btn-preset-file');
+    if (tabUploadFile && tabPresetFile) {
+      tabUploadFile.addEventListener('click', () => {
+        tabUploadFile.classList.add('active');
+        tabPresetFile.classList.remove('active');
+        $('#upload-mode-file').style.display = 'block';
+        $('#upload-mode-preset').style.display = 'none';
+        if (uploadedPhotoUrl) {
+          $('#cust-photo-preview').src = uploadedPhotoUrl;
+          $('#cust-photo-badge').textContent = '📷 Custom Upload';
+        }
+      });
+
+      tabPresetFile.addEventListener('click', () => {
+        tabPresetFile.classList.add('active');
+        tabUploadFile.classList.remove('active');
+        $('#upload-mode-file').style.display = 'none';
+        $('#upload-mode-preset').style.display = 'block';
+        $('#cust-photo-preview').src = $('#cust-photo-select').value;
+        $('#cust-photo-badge').textContent = '📷 Attached Evidence';
+      });
+    }
+
+    const dropzone = $('#cust-dropzone');
+    const fileInput = $('#cust-file-input');
+    if (dropzone && fileInput) {
+      dropzone.addEventListener('click', () => fileInput.click());
+
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handlePhotoUpload(e.dataTransfer.files[0]);
+        }
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files[0]) {
+          handlePhotoUpload(fileInput.files[0]);
+        }
+      });
+    }
+
+    async function handlePhotoUpload(file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file (PNG, JPG, or WEBP).');
+        return;
+      }
+      $('#upload-filename-label').textContent = 'Reading: ' + file.name + '...';
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64Data = e.target.result;
+        $('#cust-photo-preview').src = base64Data;
+        $('#cust-photo-badge').textContent = '📷 Custom Upload';
+        $('#cust-preview-dim').textContent = `${file.name} · ${(file.size / 1024).toFixed(1)} KB`;
+
+        try {
+          $('#upload-filename-label').textContent = 'Computing fingerprint & uploading...';
+          const res = await post('/api/claims/upload-photo', {
+            image_data: base64Data,
+            filename: file.name
+          });
+          uploadedPhotoUrl = res.photo_url;
+          uploadedPhotoHash = res.photo_hash;
+
+          $('#upload-filename-label').textContent = `✓ Uploaded: ${file.name}`;
+          const hashBadge = $('#upload-hash-badge');
+          hashBadge.style.display = 'inline-flex';
+          hashBadge.textContent = 'Hash: ' + res.photo_hash.slice(0, 10);
+        } catch (err) {
+          console.warn('Backend upload fallback:', err);
+          uploadedPhotoUrl = base64Data;
+          uploadedPhotoHash = 'user_' + Math.random().toString(36).slice(2, 10);
+          $('#upload-filename-label').textContent = `✓ Loaded: ${file.name}`;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Preset selector change handler
+    const photoSelect = $('#cust-photo-select');
+    if (photoSelect) {
+      photoSelect.addEventListener('change', () => {
+        $('#cust-photo-preview').src = photoSelect.value;
+        const val = photoSelect.value;
+        if (val.includes('rear')) {
+          $('#cust-caption').value = 'Photo shows heavy impact damage to rear bumper and tailgate.';
+        } else if (val.includes('side')) {
+          $('#cust-caption').value = 'Photo shows deep door scratches and side panel creasing.';
+        } else if (val.includes('glass')) {
+          $('#cust-caption').value = 'Photo shows shattered passenger windshield with star crack.';
+        } else if (val.includes('vandalism')) {
+          $('#cust-caption').value = 'Photo shows keyed paint scratch along side doors and scuffs.';
+        } else if (val.includes('wear')) {
+          $('#cust-caption').value = 'Photo shows worn down tire tread and degraded rubber compound.';
+        } else if (val.includes('ring')) {
+          $('#cust-caption').value = 'Photo matches previous syndicate claim CLM-RING-001 (recycled).';
+        } else {
+          $('#cust-caption').value = 'Photo shows damage to front bumper and right headlamp.';
+        }
+      });
+    }
+
+    // Custom Claim Form Submit
+    $('#btn-submit-custom-claim').addEventListener('click', async () => {
+      const btn = $('#btn-submit-custom-claim');
+      btn.disabled = true;
+      btn.innerHTML = 'Submitting & Analyzing...';
+
+      try {
+        const isFileUploadMode = $('#tab-btn-upload-file').classList.contains('active');
+        const selectedPreset = $('#cust-photo-select') ? $('#cust-photo-select').value : '/static/images/front_collision.jpg';
+        const finalPhotoUrl = (isFileUploadMode && uploadedPhotoUrl) ? uploadedPhotoUrl : selectedPreset;
+
+        const payload = {
+          policy_id: $('#cust-policy').value.trim() || 'POL-CUSTOM-01',
+          damage_type: $('#cust-damage-type').value,
+          workshop_id: $('#cust-workshop').value,
+          amount_claimed: parseFloat($('#cust-amount').value) || 2000.0,
+          incident_date: $('#cust-date').value || '2026-06-15',
+          policy_active: $('#cust-policy-status').value === 'active',
+          bank_account: $('#cust-bank-val').value.trim() || 'SYN-ACC-CUSTOM',
+          phone: $('#cust-phone-val').value.trim() || 'SYN-PH-CUSTOM',
+          narrative: $('#cust-narrative').value.trim(),
+          photo_caption: $('#cust-caption').value.trim(),
+          photo_url: finalPhotoUrl,
+          photo_hash: (isFileUploadMode && uploadedPhotoHash) ? uploadedPhotoHash : undefined
+        };
+
+        const res = await post('/api/claims/create', payload);
+
+        $$('.nav-btn')[0].click();
+        $('#manual-claim-id').value = res.claim.claim_id;
+        await renderCaseResult(res.case, $('#defender-results'));
+      } catch (e) {
+        alert('Custom claim filing error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 File & Analyze Claim with Defender';
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

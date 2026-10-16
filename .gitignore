@@ -1,0 +1,59 @@
+# Sensitive environment and credentials
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local databases & uploads
+data/claims.db
+app/static/images/uploads/*
+!app/static/images/uploads/.gitkeep
+evaluator/results/*.json
+!evaluator/results/.gitkeep
+
+# IDE & OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
