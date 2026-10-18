@@ -49,10 +49,20 @@ def run_arena(repo, per_type: int = 8, n_legit: int = 40, seed: int = 7, workers
         if progress:
             progress(done["n"], len(items))
         d = case.decision
+        pol = repo.get_policy(it["claim"].policy_id)
+        if not pol:
+            pol = {
+                "policy_id": it["claim"].policy_id,
+                "start_date": "2026-01-01",
+                "end_date": "2026-12-31",
+                "coverage_limit": 25000.0,
+            }
         return {"kind": it["kind"], "claim_id": it["claim"].claim_id, "attack_type": it["attack_type"], "stealth": it["stealth"],
                 "decoy": it["decoy"], "risk_score": d.risk_score, "recommendation": d.recommendation,
                 "flagged": d.recommendation != "fast_track",
-                "signals": [s.type for s in case.policy.signals + case.fraud.signals]}
+                "signals": [s.type for s in case.policy.signals + case.fraud.signals],
+                "claim": it["claim"].model_dump(mode="json"),
+                "policy": pol}
 
     with ThreadPoolExecutor(max_workers=workers) as pool:
         rows = list(pool.map(work, items))

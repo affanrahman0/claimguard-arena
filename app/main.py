@@ -13,9 +13,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from shared import config, dataset, domain, llm
-from shared.schemas import Claim, LineItem
+from shared.schemas import CaseResult, Claim, LineItem
 from shared.store import SqliteRepo
 from attacker.generator import ATTACK_TYPES, generate_attack
+from defender import copilot
 from defender.agents import intake
 from defender.orchestrator import analyze
 from evaluator import runner
@@ -110,6 +111,11 @@ class ArenaRequest(BaseModel):
 
 class ExtractRequest(BaseModel):
     text: str
+
+
+class CopilotEvaluateRequest(BaseModel):
+    question: str
+    claimant_answer: str
 
 
 def _store(case) -> dict:
@@ -364,6 +370,44 @@ def audit(case_id: str):
     return repo.get_audit(case_id)
 
 
+@app.post("/api/cases/{case_id}/copilot/questions")
+def copilot_questions(case_id: str):
+    raw = repo.get_case(case_id)
+    if not raw:
+        raise HTTPException(404, "Case not found")
+    case_obj = CaseResult.model_validate(raw)
+    payload, source = copilot.generate_questions(case_obj)
+    return {
+        "case_id": case_id,
+        "claim_id": case_obj.claim.claim_id,
+        "source": source,
+        "questions": [q.model_dump() for q in payload.questions]
+    }
+
+
+@app.post("/api/cases/{case_id}/copilot/evaluate")
+def copilot_evaluate(case_id: str, req: CopilotEvaluateRequest):
+    raw = repo.get_case(case_id)
+    if not raw:
+        raise HTTPException(404, "Case not found")
+    case_obj = CaseResult.model_validate(raw)
+    ev, source = copilot.evaluate_statement(case_obj, req.question, req.claimant_answer)
+    repo.add_audit(case_id, "copilot", "evaluated_statement", {
+        "question": req.question[:120],
+        "score": ev.plausibility_score,
+        "action": ev.recommended_siu_action
+    })
+    return {
+        "case_id": case_id,
+        "source": source,
+        "plausibility_score": ev.plausibility_score,
+        "credibility_assessment": ev.credibility_assessment,
+        "deception_markers": ev.deception_markers,
+        "recommended_siu_action": ev.recommended_siu_action,
+        "audit": repo.get_audit(case_id)
+    }
+
+
 @app.post("/api/attacks/launch")
 def launch(req: LaunchRequest):
     """Generate one synthetic attack and run the defender on it (the live demo button)."""
@@ -372,7 +416,13 @@ def launch(req: LaunchRequest):
     except ValueError as exc:
         raise HTTPException(422, str(exc))
     case = _store(analyze(attack.claim, repo))
-    return {"attack": attack.model_dump(mode="json"), "case": case, "caught": case["decision"]["recommendation"] != "fast_track"}
+    policy_info = get_policy_detail(attack.claim.policy_id)
+    return {
+        "attack": attack.model_dump(mode="json"),
+        "case": case,
+        "policy": policy_info,
+        "caught": case["decision"]["recommendation"] != "fast_track"
+    }
 
 
 @app.post("/api/extract")
