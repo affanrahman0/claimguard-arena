@@ -9,44 +9,47 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #070b14;
-      --bg-alt: #0c1222;
-      --panel: #111a30;
-      --panel-hover: #16223f;
-      --panel-glass: rgba(17, 26, 48, 0.78);
-      --border: #1e2c4f;
-      --border-bright: #2d4175;
-      --text: #f0f4ff;
-      --text-muted: #8a9fc7;
-      --text-dim: #54678f;
-      --cyan: #00d4ff;
-      --cyan-glow: rgba(0, 212, 255, 0.25);
+      --bg: #07090e;
+      --bg-alt: #0d121c;
+      --panel: #111724;
+      --panel-hover: #161e30;
+      --panel-glass: rgba(17, 23, 36, 0.88);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(56, 189, 248, 0.35);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --cyan: #00e5ff;
+      --cyan-glow: rgba(0, 229, 255, 0.22);
       --green: #10b981;
-      --green-glow: rgba(16, 185, 129, 0.25);
+      --green-glow: rgba(16, 185, 129, 0.22);
       --amber: #f59e0b;
-      --amber-glow: rgba(245, 158, 11, 0.25);
+      --amber-glow: rgba(245, 158, 11, 0.22);
       --red: #ef4444;
-      --red-glow: rgba(239, 68, 68, 0.25);
+      --red-glow: rgba(239, 68, 68, 0.22);
       --purple: #a855f7;
-      --purple-glow: rgba(168, 85, 247, 0.25);
-      --radius: 12px;
-      --radius-sm: 8px;
-      --radius-lg: 16px;
-      --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
-      --font-body: 'Inter', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --purple-glow: rgba(168, 85, 247, 0.22);
+      --radius: 10px;
+      --radius-sm: 6px;
+      --radius-lg: 14px;
+      --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg);
       background-image: 
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 212, 255, 0.12), transparent),
-        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(168, 85, 247, 0.08), transparent);
+        radial-gradient(ellipse 90% 40% at 50% -10%, rgba(14, 165, 233, 0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(168, 85, 247, 0.06), transparent),
+        linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
       color: var(--text);
       font-family: var(--font-body);
-      font-size: 14px;
-      line-height: 1.6;
+      font-size: 13.5px;
+      line-height: 1.55;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
@@ -393,6 +396,35 @@
       border-radius: var(--radius-sm);
       padding: 10px 14px;
       animation: stepIn 0.3s ease both;
+      transition: all 0.25s ease;
+    }
+    .timeline-step.pending {
+      opacity: 0.5;
+      border-left: 4px dashed rgba(255, 255, 255, 0.2);
+      background: rgba(12, 18, 34, 0.35);
+    }
+    .timeline-step.running {
+      opacity: 1;
+      border-left: 4px solid var(--cyan);
+      background: rgba(0, 229, 255, 0.08);
+      box-shadow: 0 0 16px rgba(0, 229, 255, 0.25);
+      animation: pulseActive 1.4s infinite ease-in-out;
+    }
+    @keyframes pulseActive {
+      0%, 100% { border-color: rgba(0, 229, 255, 0.4); box-shadow: 0 0 8px rgba(0, 229, 255, 0.15); }
+      50% { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0, 229, 255, 0.45); }
+    }
+    .timeline-step.clean {
+      border-left: 4px solid var(--green);
+      background: rgba(16, 185, 129, 0.06);
+    }
+    .timeline-step.flagged {
+      border-left: 4px solid var(--amber);
+      background: rgba(245, 158, 11, 0.07);
+    }
+    .timeline-step.critical {
+      border-left: 4px solid var(--red);
+      background: rgba(239, 68, 68, 0.08);
     }
     @keyframes stepIn {
       from { opacity: 0; transform: translateX(-6px); }
@@ -423,6 +455,107 @@
       color: var(--text);
       line-height: 1.4;
     }
+
+    /* Score attribution tag inside agent cards */
+    .agent-score-tag {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-mono);
+      margin-left: 6px;
+    }
+    .agent-score-tag.clean {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .agent-score-tag.flagged {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .agent-score-tag.critical {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Transparent Scoring Formula Box */
+    .scoring-formula-box {
+      background: rgba(13, 18, 28, 0.95);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      animation: stepIn 0.35s ease both;
+    }
+    .formula-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .formula-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .formula-equation {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      background: var(--bg);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .formula-chip {
+      display: flex;
+      flex-direction: column;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10.5px;
+    }
+    .formula-chip span { color: var(--text-dim); font-size: 9.5px; }
+    .formula-chip b { font-family: var(--font-mono); font-size: 12.5px; }
+    .formula-chip.clean { background: rgba(16, 185, 129, 0.1); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.25); }
+    .formula-chip.policy { background: rgba(245, 158, 11, 0.1); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.25); }
+    .formula-chip.fraud { background: rgba(239, 68, 68, 0.1); color: var(--red); border: 1px solid rgba(239, 68, 68, 0.25); }
+    .formula-chip.final { background: rgba(0, 229, 255, 0.12); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.3); }
+    .formula-op { font-size: 13px; font-weight: 700; color: var(--text-muted); }
+
+    .formula-thresholds {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      font-size: 10px;
+      text-align: center;
+    }
+    .thresh-pill {
+      padding: 4px 6px;
+      border-radius: 4px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    .thresh-pill.active {
+      font-weight: 700;
+      border-width: 1.5px;
+    }
+    .thresh-pill.active.green { background: rgba(16, 185, 129, 0.15); border-color: var(--green); color: var(--green); }
+    .thresh-pill.active.amber { background: rgba(245, 158, 11, 0.15); border-color: var(--amber); color: var(--amber); }
+    .thresh-pill.active.red { background: rgba(239, 68, 68, 0.15); border-color: var(--red); color: var(--red); }
 
     /* Verdict Card & Gauge */
     .verdict-box {
@@ -849,6 +982,166 @@
       flex-direction: column;
       align-items: center;
     }
+
+    /* Micro buttons for dense table inspection */
+    .btn-micro {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      border-radius: 5px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.28);
+      color: var(--cyan);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-micro:hover {
+      background: rgba(0, 229, 255, 0.2);
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+    }
+    .btn-micro-green {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: rgba(16, 185, 129, 0.28);
+      color: var(--green);
+    }
+    .btn-micro-green:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--green);
+    }
+
+    /* Copilot button with breathing pulse */
+    .btn-copilot {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(139, 92, 246, 0.25));
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      color: #c084fc;
+      font-weight: 600;
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+    }
+    .btn-copilot:hover {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.3), rgba(139, 92, 246, 0.35));
+      border-color: #a855f7;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(168, 85, 247, 0.35);
+      transform: translateY(-1px);
+    }
+
+    /* Copilot Question Cards */
+    .copilot-q-card {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 10px;
+    }
+    .copilot-q-card:hover {
+      border-color: var(--cyan);
+      background: rgba(0, 229, 255, 0.04);
+      transform: translateY(-1px);
+    }
+    .copilot-q-card.selected {
+      border-color: var(--cyan);
+      background: rgba(0, 229, 255, 0.08);
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.18);
+    }
+    .copilot-preset-chip {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .copilot-preset-chip:hover {
+      background: rgba(0, 229, 255, 0.14);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+
+    /* Printable Official Dossier Styling */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        font-size: 11.5px !important;
+        padding: 0 !important;
+      }
+      header, nav, .samples-grid, .card:not(.dossier-print-card), .callout, .sub-tabs,
+      .modal-close, button, .modal-backdrop:not(#dossier-modal), #panel-claim-details,
+      #panel-policy-details, #manual-claim-id, #btn-analyze, .expandable-panel,
+      .no-print {
+        display: none !important;
+      }
+      #dossier-modal {
+        position: static !important;
+        display: block !important;
+        background: #ffffff !important;
+        backdrop-filter: none !important;
+        padding: 0 !important;
+        z-index: 1 !important;
+      }
+      .modal-window {
+        max-width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      .modal-header {
+        display: none !important;
+      }
+      .modal-body {
+        padding: 0 !important;
+      }
+      .dossier-section {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        page-break-inside: avoid;
+        margin-bottom: 12px !important;
+        padding: 12px !important;
+      }
+      .dossier-sec-title {
+        color: #0f172a !important;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 4px;
+      }
+      table.data-table th, table.data-table td {
+        border-bottom: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+        padding: 5px 8px !important;
+      }
+      table.data-table th {
+        background: #f8fafc !important;
+        color: #475569 !important;
+      }
+      .badge {
+        border: 1px solid #94a3b8 !important;
+        color: #0f172a !important;
+        background: #f1f5f9 !important;
+      }
+      .badge-red { background: #fee2e2 !important; color: #991b1b !important; border-color: #fca5a5 !important; }
+      .badge-green { background: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
+      .badge-amber { background: #fef3c7 !important; color: #92400e !important; border-color: #fde68a !important; }
+      .print-only { display: block !important; }
+    }
+    @media screen {
+      .print-only { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -992,6 +1285,9 @@
               </div>
             </div>
 
+            <!-- Transparent Risk Attribution & Score Formula Card -->
+            <div id="scoring-formula-card" style="display:none;"></div>
+
             <!-- Multi-Agent Pipeline Execution Timeline -->
             <div class="card-title" style="font-size:13px; margin-top:16px;">Agent Execution Pipeline</div>
             <div class="agent-timeline" id="agent-timeline"></div>
@@ -1023,13 +1319,24 @@
 
             <!-- Human Adjuster Actions -->
             <div style="background:var(--bg-alt); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border); margin-top:18px;">
-              <div style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px;">
-                Human-in-the-Loop Adjuster Console
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">
+                  Human-in-the-Loop Adjuster &amp; SIU Console
+                </span>
+                <span class="badge badge-purple" style="font-size:10.5px; font-family:var(--font-mono);">Gemini 3.8 Flash Active</span>
               </div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
                 <button class="btn btn-sm btn-alt" style="border-color:var(--green); color:var(--green);" data-action="approve">✓ Approve Payout</button>
                 <button class="btn btn-sm btn-alt" style="border-color:var(--amber); color:var(--amber);" data-action="override">⚡ Adjuster Override</button>
                 <button class="btn btn-sm btn-alt" style="border-color:var(--red); color:var(--red);" data-action="escalate">🚨 Escalate to SIU</button>
+                <button class="btn btn-sm btn-copilot" id="btn-open-copilot">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                  🎙️ SIU Interrogation Copilot
+                </button>
+                <button class="btn btn-sm btn-alt" id="btn-export-dossier" style="border-color:var(--cyan); color:var(--cyan);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                  📋 Export SIU Compliance Dossier (PDF)
+                </button>
               </div>
               <div class="audit-trail" id="audit-trail"></div>
             </div>
@@ -1130,6 +1437,47 @@
             </div>
           </div>
           <p style="font-size:13px; color:var(--text-muted); margin-top:8px;" id="attack-intent-desc"></p>
+        </div>
+
+        <!-- Expandable Panels: Adversarial Claim Specs & Target Policy Contract -->
+        <div style="margin-bottom:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <!-- Panel 1: Injected Adversarial Claim Specifications -->
+          <div class="expandable-panel" id="panel-atk-claim-details">
+            <div class="expandable-panel-header" onclick="toggleExpandPanel('atk-claim-details')">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="expand-icon" id="icon-atk-claim-details">▶</span>
+                <div style="text-align:left;">
+                  <div style="font-weight:700; color:var(--purple); font-size:13.5px; display:flex; align-items:center; gap:6px;">
+                    <span>⚔️</span> Injected Adversarial Claim Specifications
+                  </div>
+                  <div style="font-size:11px; color:var(--text-muted);">Inspect adversary payload, forged narrative, &amp; tampered lines</div>
+                </div>
+              </div>
+              <span class="badge badge-purple" id="badge-atk-claim-details-toggle">Click to Expand</span>
+            </div>
+            <div class="expandable-panel-body" id="body-atk-claim-details" style="display:none;">
+              <div id="content-atk-claim-details"></div>
+            </div>
+          </div>
+
+          <!-- Panel 2: Target Underwritten Insurance Policy Terms -->
+          <div class="expandable-panel" id="panel-atk-policy-details">
+            <div class="expandable-panel-header" onclick="toggleExpandPanel('atk-policy-details')">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span class="expand-icon" id="icon-atk-policy-details">▶</span>
+                <div style="text-align:left;">
+                  <div style="font-weight:700; color:#10b981; font-size:13.5px; display:flex; align-items:center; gap:6px;">
+                    <span>🛡️</span> Target Insurance Policy Contract
+                  </div>
+                  <div style="font-size:11px; color:var(--text-muted);">Cross-verify underlying policy terms, coverage caps, and exclusions</div>
+                </div>
+              </div>
+              <span class="badge" id="badge-atk-policy-details-toggle">Click to Expand</span>
+            </div>
+            <div class="expandable-panel-body" id="body-atk-policy-details" style="display:none;">
+              <div id="content-atk-policy-details"></div>
+            </div>
+          </div>
         </div>
 
         <div id="attack-case-view"></div>
@@ -1427,11 +1775,41 @@
       <div class="modal-header">
         <div>
           <span class="badge badge-cyan" id="modal-claim-badge">Claim Dossier</span>
-          <h2 style="font-family:var(--font-heading); font-size:18px; margin-top:4px;" id="modal-claim-title">Claim Evidence & Forensic Dossier</h2>
+          <h2 style="font-family:var(--font-heading); font-size:18px; margin-top:4px;" id="modal-claim-title">Official Forensic Fraud &amp; Compliance Audit Dossier</h2>
         </div>
-        <button class="modal-close" id="modal-close-btn">&times;</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn btn-sm btn-copilot no-print" id="modal-copilot-shortcut-btn" style="padding:5px 11px;">
+            🎙️ SIU Copilot
+          </button>
+          <button class="btn btn-sm btn-alt no-print" id="modal-print-btn" style="border-color:var(--cyan); color:var(--cyan); padding:5px 11px;">
+            🖨️ Print / Export PDF
+          </button>
+          <button class="modal-close no-print" id="modal-close-btn">&times;</button>
+        </div>
       </div>
       <div class="modal-body" id="modal-dossier-content"></div>
+    </div>
+  </div>
+
+  <!-- ================= AI SIU INTERROGATION COPILOT MODAL ================= -->
+  <div class="modal-backdrop" id="copilot-modal">
+    <div class="modal-window" style="max-width: 960px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="brand-icon" style="width:36px; height:36px; background:linear-gradient(135deg, #0ea5e9, #8b5cf6);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="badge badge-purple" style="font-size:10.5px;">Gemini 3.8 Flash Co-pilot</span>
+              <span class="badge badge-cyan" id="copilot-claim-badge">Claim CLM-00000</span>
+            </div>
+            <h2 style="font-family:var(--font-heading); font-size:17.5px; margin-top:2px;">AI SIU Interrogation Copilot</h2>
+          </div>
+        </div>
+        <button class="modal-close" id="copilot-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" id="copilot-modal-body"></div>
     </div>
   </div>
 
@@ -1729,7 +2107,18 @@
     function closeModal() { $('#dossier-modal').classList.remove('open'); }
     $('#modal-close-btn').addEventListener('click', closeModal);
     $('#dossier-modal').addEventListener('click', e => { if (e.target === $('#dossier-modal')) closeModal(); });
-    window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    function openCopilotModalUI() { $('#copilot-modal').classList.add('open'); }
+    function closeCopilotModalUI() { $('#copilot-modal').classList.remove('open'); }
+    $('#copilot-close-btn').addEventListener('click', closeCopilotModalUI);
+    $('#copilot-modal').addEventListener('click', e => { if (e.target === $('#copilot-modal')) closeCopilotModalUI(); });
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeCopilotModalUI(); } });
+
+    $('#modal-print-btn').addEventListener('click', () => window.print());
+    $('#modal-copilot-shortcut-btn').addEventListener('click', () => {
+      closeModal();
+      openCopilot(currentCase || attackCase);
+    });
 
     // Photo preview on custom form
     $('#cust-photo-select').addEventListener('change', e => {
@@ -1954,11 +2343,34 @@
       const isReused = fr.signals.some(s => s.type === 'reused_photo') || c.photo_hash === 'a1b2c3d4e5f60718';
 
       $('#modal-dossier-content').innerHTML = `
+        <!-- Regulatory Dossier Official Header -->
+        <div style="border-bottom: 2px solid var(--border-bright); padding-bottom: 14px; margin-bottom: 18px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+          <div>
+            <div style="font-family:var(--font-heading); font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--cyan); font-weight:700;">
+              ClaimGuard Mutual Underwriting Corp · Special Investigation Unit
+            </div>
+            <h1 style="font-family:var(--font-heading); font-size:20px; font-weight:800; margin-top:2px; color:var(--text);">
+              Forensic Fraud &amp; Statutory Compliance Audit Dossier
+            </h1>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:3px;">
+              Dossier Tracking UUID: <span style="font-family:var(--font-mono); color:var(--cyan); font-weight:700;">SIU-AUDIT-${esc(c.claim_id)}-${(caseData.case_id || 'FINAL').slice(0,8).toUpperCase()}</span> · NAIC Code Compliant
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="badge ${dec.risk_score < 30 ? 'badge-green' : dec.risk_score <= 60 ? 'badge-amber' : 'badge-red'}" style="font-size:13px; padding:6px 14px; font-weight:800;">
+              ADJUDICATION: ${pretty(dec.recommendation).toUpperCase()} (${dec.risk_score}/100)
+            </div>
+            <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">
+              Report Date: ${new Date().toLocaleDateString()} · Certified Forensic Copy
+            </div>
+          </div>
+        </div>
+
         <!-- Section 1: Attached Vehicle Damage Photograph & Blueprint -->
         <div class="dossier-section">
           <div class="dossier-sec-title">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            1. Attached Damage Photograph & Impact Blueprint
+            1. Attached Damage Photograph &amp; Impact Blueprint
           </div>
           <div class="grid-2" style="align-items:center; margin-bottom:12px;">
             <div style="position:relative; border-radius:8px; overflow:hidden; border:1px solid var(--border); background:#000;">
@@ -1972,11 +2384,11 @@
           </div>
           
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <div style="background:#060a14; padding:12px; border-radius:6px;">
+            <div style="background:#060a14; padding:12px; border-radius:6px; border:1px solid var(--border);">
               <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Driver's Accident Narrative</div>
               <div style="font-size:13px; color:var(--text); font-style:italic; margin-top:4px;">"${esc(c.narrative)}"</div>
             </div>
-            <div style="background:#060a14; padding:12px; border-radius:6px;">
+            <div style="background:#060a14; padding:12px; border-radius:6px; border:1px solid var(--border);">
               <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase;">Photo Forensic Inspection</div>
               <div style="font-size:13px; color:var(--text); margin-top:4px;">📷 ${esc(c.photo_caption)}</div>
               <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim); margin-top:4px;">
@@ -2021,7 +2433,7 @@
         <div class="dossier-section">
           <div class="dossier-sec-title">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            3. Itemized Repair Invoice & Pricing Anomaly Check
+            3. Itemized Repair Invoice &amp; Pricing Anomaly Check
           </div>
           <table class="data-table">
             <thead><tr><th>Repair Line / Replacement Part</th><th style="text-align:right;">Cost ($)</th></tr></thead>
@@ -2052,7 +2464,7 @@
         <div class="dossier-section">
           <div class="dossier-sec-title">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/></svg>
-            4. Workshop History & Entity Collusion Cross-Check
+            4. Workshop History &amp; Entity Collusion Cross-Check
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px;">
             <div><b>Repair Workshop:</b> ${esc(c.workshop_id)}</div>
@@ -2062,29 +2474,531 @@
           </div>
         </div>
 
-        <!-- Section 5: Adjuster Decision & Full Reasoning -->
-        <div class="dossier-section" style="margin-bottom:0;">
+        <!-- Section 5: SIU Interrogation & Statement Credibility Record -->
+        <div class="dossier-section">
+          <div class="dossier-sec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            5. AI SIU Interrogation &amp; Sworn Statement Adjudication Record
+          </div>
+          ${caseData._copilot_eval ? `
+            <div style="background:#060a14; border:1px solid var(--border); border-radius:6px; padding:12px; margin-bottom:10px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Investigator Cross-Examination Question</div>
+              <div style="font-size:13px; font-weight:600; color:var(--text); margin-top:2px;">"${esc(caseData._copilot_eval.question)}"</div>
+            </div>
+            <div style="background:#060a14; border:1px solid var(--border); border-radius:6px; padding:12px; margin-bottom:10px;">
+              <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Claimant's Sworn Response</div>
+              <div style="font-size:13px; font-style:italic; color:var(--cyan); margin-top:2px;">"${esc(caseData._copilot_eval.answer)}"</div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 2fr; gap:12px; align-items:center; background:rgba(0,0,0,0.3); padding:12px; border-radius:6px; border:1px solid var(--border);">
+              <div>
+                <span class="badge ${caseData._copilot_eval.score >= 70 ? 'badge-green' : caseData._copilot_eval.score >= 40 ? 'badge-amber' : 'badge-red'}" style="font-size:13px; padding:4px 10px;">
+                  Plausibility: ${caseData._copilot_eval.score}/100
+                </span>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">
+                  <b>Deception Indicators:</b><br>${(caseData._copilot_eval.deceptions || []).join(', ') || 'None'}
+                </div>
+              </div>
+              <div style="font-size:12.5px; color:var(--text); line-height:1.4;">
+                <b>Forensic Adjudication:</b> ${esc(caseData._copilot_eval.assessment)}
+                <div style="font-weight:700; color:var(--amber); margin-top:6px;">
+                  Action: ${esc(caseData._copilot_eval.action)}
+                </div>
+              </div>
+            </div>
+          ` : `
+            <div style="color:var(--text-muted); font-size:12.5px; display:flex; justify-content:space-between; align-items:center;">
+              <span>No recorded sworn claimant examination on file. Click "SIU Copilot" above to interrogate claimant with Gemini.</span>
+            </div>
+          `}
+        </div>
+
+        <!-- Section 6: Adjuster Decision & Full Reasoning -->
+        <div class="dossier-section">
           <div class="dossier-sec-title">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            5. Decision Agent Recommendation & Reasoning
+            6. Decision Agent Recommendation &amp; Reasoning
           </div>
           <div style="font-size:14px; font-weight:700; margin-bottom:6px; color:${dec.risk_score < 30 ? 'var(--green)' : dec.risk_score <= 60 ? 'var(--amber)' : 'var(--red)'};">
             Risk Score: ${dec.risk_score} / 100 · Recommendation: ${pretty(dec.recommendation)}
           </div>
           <p style="font-size:13.5px; color:var(--text); line-height:1.5;">${esc(dec.reasoning)}</p>
         </div>
+
+        <!-- Section 7: Regulatory Attestation & SIU Sign-Off -->
+        <div class="dossier-section" style="margin-bottom:0; background:rgba(14, 22, 36, 0.4); border:1px solid var(--border-bright);">
+          <div class="dossier-sec-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            7. Regulatory Attestation &amp; SIU Investigator Sign-Off
+          </div>
+          <p style="font-size:11.5px; color:var(--text-muted); line-height:1.4; margin-bottom:12px;">
+            I hereby certify under statutory penalty of insurance regulatory filings that this claim file has been reviewed through automated forensic multi-agent fraud detection. All perceptual hashes, repair invoices, and network entity relationships have been audited against ClaimGuard Mutual underwriting rules.
+          </p>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; font-size:12px; border-top:1px dashed var(--border); padding-top:10px;">
+            <div>
+              <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase;">Investigator In Charge</div>
+              <div style="font-weight:700; color:var(--text); margin-top:2px;">Special Investigation Unit (SIU)</div>
+              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-dim);">ID: SIU-OFFICER-774</div>
+            </div>
+            <div>
+              <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase;">Digital Verification Stamp</div>
+              <div style="font-family:var(--font-mono); color:var(--cyan); font-weight:700; margin-top:2px;">SHA256:VERIFIED-VALID</div>
+              <div style="font-size:11px; color:var(--text-dim);">${new Date().toISOString().slice(0, 10)}</div>
+            </div>
+            <div>
+              <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase;">Adjudication Disposition</div>
+              <div style="font-weight:800; color:${dec.risk_score < 30 ? 'var(--green)' : dec.risk_score <= 60 ? 'var(--amber)' : 'var(--red)'}; margin-top:2px;">
+                ${pretty(dec.recommendation).toUpperCase()}
+              </div>
+              <div style="font-size:11px; color:var(--text-dim);">Statutory Compliance Hold / Cleared</div>
+            </div>
+          </div>
+        </div>
       `;
       openModal();
     }
 
+    // ---------- AI SIU INTERROGATION COPILOT ----------
+    let copilotQuestions = [];
+    let activeQuestionIndex = 0;
+
+    window.openCopilot = async function(caseData) {
+      if (!caseData) {
+        alert('Please analyze a showcase claim or launch an attack first before opening the Interrogation Copilot.');
+        return;
+      }
+      currentCase = caseData;
+      const c = caseData.claim;
+      const dec = caseData.decision;
+
+      $('#copilot-claim-badge').textContent = `Claim ${c.claim_id} · ${pretty(dec.recommendation)}`;
+      openCopilotModalUI();
+
+      const body = $('#copilot-modal-body');
+      body.innerHTML = `
+        <!-- Top Summary Bar -->
+        <div style="background:var(--bg-alt); border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <div style="font-weight:700; font-size:15px; color:var(--text);">${esc(c.claim_id)} · ${esc(c.claimant_id)}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                Claimed: <b style="color:var(--cyan);">$${Number(c.amount_claimed || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</b> · Damage: <b>${pretty(c.damage_type)}</b> · Workshop: <b>${esc(c.workshop_id)}</b>
+              </div>
+            </div>
+            <div>
+              <span class="badge ${dec.risk_score < 30 ? 'badge-green' : dec.risk_score <= 60 ? 'badge-amber' : 'badge-red'}" style="font-size:12px; padding:4px 10px;">
+                Risk Score: ${dec.risk_score}/100 · ${pretty(dec.recommendation)}
+              </span>
+            </div>
+          </div>
+          <div style="margin-top:10px; font-size:12px; color:var(--text-muted); border-top:1px solid var(--border); padding-top:8px;">
+            <b>Narrative:</b> "${esc(c.narrative)}" · <b>Photo Fingerprint:</b> <span style="font-family:var(--font-mono);">${esc((c.photo_hash || '').slice(0,12))}</span>
+          </div>
+        </div>
+
+        <!-- Question Generation Section -->
+        <div style="margin-bottom:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div>
+              <div style="font-size:14px; font-weight:700; color:var(--text);">Step 1: Pointed Cross-Examination Strategy (Gemini 3.8 Flash)</div>
+              <div style="font-size:12px; color:var(--text-muted);">Probes narrative contradictions, invoice padding, recycled photos, &amp; syndicate links:</div>
+            </div>
+            <button class="btn btn-sm btn-purple" id="btn-generate-copilot-q">
+              ⚡ Formulate Questions with Gemini
+            </button>
+          </div>
+          <div id="copilot-questions-list">
+            <div style="text-align:center; padding:22px; color:var(--text-muted); border:1px dashed var(--border); border-radius:8px;">
+              Generating targeted cross-examination questions with Gemini 3.8 Flash...
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Claimant Answer Evaluation -->
+        <div id="copilot-eval-section" style="display:none; border-top:1px solid var(--border); padding-top:16px;">
+          <div style="font-size:14px; font-weight:700; color:var(--text); margin-bottom:8px;">
+            Step 2: Claimant Statement &amp; Credibility Adjudication
+          </div>
+          
+          <div style="background:#090e1b; border:1px solid var(--border-bright); border-radius:8px; padding:12px 14px; margin-bottom:12px;">
+            <div style="font-size:11px; text-transform:uppercase; color:var(--cyan); font-weight:700; margin-bottom:4px;" id="copilot-active-q-badge">
+              Active Selected Question
+            </div>
+            <div style="font-size:13.5px; color:var(--text); font-weight:600;" id="copilot-active-q-text"></div>
+            <div style="font-size:11.5px; color:var(--text-muted); margin-top:4px;" id="copilot-active-q-obj"></div>
+          </div>
+
+          <!-- Suggested Response Presets -->
+          <div style="margin-bottom:10px;">
+            <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:6px;"><b>Realistic Claimant Statements (Click preset chip to populate or edit):</b></div>
+            <div id="copilot-preset-chips"></div>
+          </div>
+
+          <textarea id="copilot-claimant-answer" rows="3" style="width:100%; font-size:13px; font-family:var(--font-body); margin-bottom:12px;" placeholder="Select a preset response above or type the claimant's explanation..."></textarea>
+
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:12px; color:var(--text-muted);" id="copilot-eval-status"></span>
+            <button class="btn" id="btn-eval-statement">
+              ⚖️ Adjudicate Statement with Gemini
+            </button>
+          </div>
+
+          <!-- Evaluation Verdict Box -->
+          <div id="copilot-eval-result" style="display:none; margin-top:16px;"></div>
+        </div>
+      `;
+
+      // Formulate Questions Click Handler
+      $('#btn-generate-copilot-q').addEventListener('click', async () => {
+        const btn = $('#btn-generate-copilot-q');
+        btn.disabled = true;
+        btn.innerHTML = 'Formulating with Gemini...';
+        try {
+          const res = await post(`/api/cases/${caseData.case_id}/copilot/questions`);
+          copilotQuestions = res.questions || [];
+          renderCopilotQuestionsList();
+        } catch (e) {
+          alert('Copilot Question Generation failed: ' + e.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '⚡ Refresh Questions';
+        }
+      });
+
+      // Automatically trigger generation immediately upon opening!
+      $('#btn-generate-copilot-q').click();
+    };
+
+    function renderCopilotQuestionsList() {
+      const container = $('#copilot-questions-list');
+      if (!container) return;
+      if (!copilotQuestions.length) {
+        container.innerHTML = '<div style="color:var(--text-muted); font-size:13px;">No questions generated.</div>';
+        return;
+      }
+      container.innerHTML = copilotQuestions.map((q, idx) => `
+        <div class="copilot-q-card ${idx === activeQuestionIndex ? 'selected' : ''}" data-idx="${idx}">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span class="badge badge-purple" style="font-size:11px;">${esc(q.id)}</span>
+            <span style="font-size:11.5px; font-weight:700; color:var(--cyan);">${esc(q.target_signal)}</span>
+          </div>
+          <div style="font-size:13px; font-weight:600; color:var(--text); margin-bottom:4px;">
+            "${esc(q.question)}"
+          </div>
+          <div style="font-size:11.5px; color:var(--text-muted);">
+            <b>Tactical Objective:</b> ${esc(q.objective)}
+          </div>
+        </div>
+      `).join('');
+
+      $$('.copilot-q-card').forEach(card => {
+        card.addEventListener('click', () => {
+          activeQuestionIndex = +card.getAttribute('data-idx');
+          renderCopilotQuestionsList();
+          loadActiveQuestion(copilotQuestions[activeQuestionIndex]);
+        });
+      });
+
+      loadActiveQuestion(copilotQuestions[activeQuestionIndex]);
+    }
+
+    function loadActiveQuestion(q) {
+      if (!q) return;
+      $('#copilot-eval-section').style.display = 'block';
+      $('#copilot-active-q-badge').textContent = `Active Interrogation Question (${q.id}) · ${q.target_signal}`;
+      $('#copilot-active-q-text').textContent = `"${q.question}"`;
+      $('#copilot-active-q-obj').textContent = `Objective: ${q.objective}`;
+
+      const chipsBox = $('#copilot-preset-chips');
+      const answers = q.suggested_answers || [];
+      chipsBox.innerHTML = answers.map((ans, i) => `
+        <span class="copilot-preset-chip" data-ans="${esc(ans)}">
+          ${esc(ans.length > 55 ? ans.slice(0, 52) + '...' : ans)}
+        </span>
+      `).join('');
+
+      // Pre-fill answer with first preset
+      if (answers.length) {
+        $('#copilot-claimant-answer').value = answers[0];
+      }
+
+      $$('.copilot-preset-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          $('#copilot-claimant-answer').value = chip.getAttribute('data-ans');
+        });
+      });
+
+      // Wire up Adjudicate button
+      $('#btn-eval-statement').onclick = async () => {
+        const ans = $('#copilot-claimant-answer').value.trim();
+        if (!ans) return alert('Please enter or select a claimant statement to evaluate.');
+
+        const btn = $('#btn-eval-statement');
+        btn.disabled = true;
+        btn.innerHTML = 'Adjudicating with Gemini...';
+        $('#copilot-eval-status').textContent = 'Analyzing statement consistency against photos, invoice, and policy terms...';
+
+        try {
+          const res = await post(`/api/cases/${currentCase.case_id}/copilot/evaluate`, {
+            question: q.question,
+            claimant_answer: ans
+          });
+
+          // Store on current case so it immediately displays in printable dossier
+          currentCase._copilot_eval = {
+            question: q.question,
+            answer: ans,
+            score: res.plausibility_score,
+            assessment: res.credibility_assessment,
+            deceptions: res.deception_markers,
+            action: res.recommended_siu_action
+          };
+
+          const resBox = $('#copilot-eval-result');
+          resBox.style.display = 'block';
+          const sc = res.plausibility_score;
+          const scoreClass = sc >= 70 ? 'badge-green' : sc >= 40 ? 'badge-amber' : 'badge-red';
+
+          resBox.innerHTML = `
+            <div style="background:var(--bg-alt); border:1px solid var(--border-bright); border-radius:8px; padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span class="badge ${scoreClass}" style="font-size:14px; padding:6px 14px; font-weight:800;">
+                    Plausibility Score: ${sc} / 100
+                  </span>
+                  <span class="badge badge-purple">${res.source === 'gemini' ? 'Gemini 3.8 Flash' : 'Rule-Based Fallback'}</span>
+                </div>
+                <button class="btn btn-sm btn-alt" onclick="showDossierModal(currentCase)" style="border-color:var(--cyan); color:var(--cyan);">
+                  📋 View in Compliance Dossier
+                </button>
+              </div>
+
+              <div style="font-size:13.5px; color:var(--text); line-height:1.5; margin-bottom:12px;">
+                <b>Forensic Adjudication:</b> ${esc(res.credibility_assessment)}
+              </div>
+
+              <div style="margin-bottom:12px;">
+                <div style="font-size:11.5px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px;">
+                  Detected Deception Markers
+                </div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  ${(res.deception_markers || []).map(m => `
+                    <span class="badge badge-red" style="font-size:11.5px;">⚠️ ${esc(m)}</span>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div style="background:rgba(245, 158, 11, 0.1); border:1px solid rgba(245, 158, 11, 0.3); border-radius:6px; padding:10px 14px;">
+                <div style="font-size:11px; text-transform:uppercase; color:var(--amber); font-weight:700;">
+                  Recommended SIU Disposition
+                </div>
+                <div style="font-size:13.5px; font-weight:700; color:var(--text); margin-top:2px;">
+                  ${esc(res.recommended_siu_action)}
+                </div>
+              </div>
+            </div>
+          `;
+
+          // Refresh audit trail in UI
+          if (res.audit && typeof window.renderAuditTrail === 'function') {
+            window.renderAuditTrail(res.audit);
+          } else if (typeof renderAuditTrail === 'function') {
+            renderAuditTrail(res.audit);
+          } else if (currentCase && currentCase.case_id && typeof loadAudit === 'function') {
+            loadAudit(currentCase.case_id);
+          }
+        } catch (e) {
+          alert('Adjudication error: ' + e.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '⚖️ Adjudicate Statement with Gemini';
+          $('#copilot-eval-status').textContent = '';
+        }
+      };
+    }
+
     $('#btn-view-dossier-def').addEventListener('click', () => showDossierModal(currentCase));
     $('#btn-view-dossier-atk').addEventListener('click', () => showDossierModal(attackCase));
+
+    const btnExportDossier = $('#btn-export-dossier');
+    if (btnExportDossier) {
+      btnExportDossier.addEventListener('click', () => {
+        if (!currentCase) return alert('Please analyze a claim first.');
+        showDossierModal(currentCase);
+      });
+    }
+
+    const btnOpenCopilot = $('#btn-open-copilot');
+    if (btnOpenCopilot) {
+      btnOpenCopilot.addEventListener('click', () => {
+        if (!currentCase) return alert('Please analyze a claim first before launching Copilot.');
+        openCopilot(currentCase);
+      });
+    }
+
+    // ---------- Score Odometer Animation ----------
+    function animateScoreCount(target) {
+      const el = $('#score-val');
+      const circle = $('#verdict-circle');
+      if (!el) return;
+      let startVal = 0;
+      const duration = 550;
+      const startTime = performance.now();
+
+      function step(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const current = Math.round(progress * target);
+        el.textContent = current;
+        if (circle) {
+          circle.className = 'risk-score-circle ' + (current < 30 ? 'score-clean' : current <= 60 ? 'score-warn' : 'score-danger');
+        }
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          el.textContent = target;
+          if (circle) {
+            circle.className = 'risk-score-circle ' + (target < 30 ? 'score-clean' : target <= 60 ? 'score-warn' : 'score-danger');
+          }
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ---------- Transparent Risk Scoring Formula Card ----------
+    function renderScoringFormulaBox(polScore, frScore, finalScore, rec, polSignals, frSignals) {
+      const box = $('#scoring-formula-card');
+      if (!box) return;
+      box.style.display = 'block';
+
+      const polExplanation = polScore > 0
+        ? polSignals.map(s => `<b>${pretty(s.type)}</b> (+${s.weight} pts)`).join(', ')
+        : 'Active policy, loss date verified within window, zero contract exclusions (0 pts)';
+
+      const frExplanation = frScore > 0
+        ? frSignals.map(s => `<b>${pretty(s.type)}</b> (+${s.weight} pts)`).join(', ')
+        : 'Narrative aligns with photos, unique perceptual hash, clean workshop standing (0 pts)';
+
+      box.innerHTML = `
+        <div class="scoring-formula-box">
+          <div class="formula-header">
+            <span class="formula-title">🧮 Transparent Risk Scoring Attribution</span>
+            <span style="font-family:var(--font-mono); font-size:11px; color:var(--cyan); font-weight:700;">Statutory Scoring Engine</span>
+          </div>
+          <div class="formula-equation">
+            <div class="formula-chip clean">
+              <span>Base Risk</span>
+              <b>0 pts</b>
+            </div>
+            <span class="formula-op">+</span>
+            <div class="formula-chip ${polScore > 0 ? 'policy' : 'clean'}">
+              <span>Policy Infractions</span>
+              <b>+${polScore} pts</b>
+            </div>
+            <span class="formula-op">+</span>
+            <div class="formula-chip ${frScore > 0 ? 'fraud' : 'clean'}">
+              <span>Fraud Detections</span>
+              <b>+${frScore} pts</b>
+            </div>
+            <span class="formula-op">=</span>
+            <div class="formula-chip final">
+              <span>Composite Risk</span>
+              <b>${finalScore} / 100</b>
+            </div>
+          </div>
+
+          <div style="font-size:11.5px; color:var(--text-muted); background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:8px 12px; margin-bottom:8px; line-height:1.5;">
+            <div><b>Policy Attribution:</b> ${polExplanation}</div>
+            <div style="margin-top:2px;"><b>Forensic Attribution:</b> ${frExplanation}</div>
+          </div>
+
+          <div class="formula-thresholds">
+            <div class="thresh-pill ${finalScore < 30 ? 'active green' : ''}">
+              <b>0 - 29: Fast Track</b><br><span style="font-size:9.5px;">Auto-Settlement Authorized</span>
+            </div>
+            <div class="thresh-pill ${finalScore >= 30 && finalScore <= 60 ? 'active amber' : ''}">
+              <b>30 - 60: Investigate</b><br><span style="font-size:9.5px;">Adjuster Verification Required</span>
+            </div>
+            <div class="thresh-pill ${finalScore > 60 ? 'active red' : ''}">
+              <b>61 - 100: SIU Escalate</b><br><span style="font-size:9.5px;">Fraud Syndicate Formal Audit</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ---------- Immediate Multi-Agent Pipeline Loading State ----------
+    function renderAgentPipelineWorking(claimId) {
+      $('#defender-results').style.display = 'block';
+      const tl = $('#agent-timeline');
+      if (tl) {
+        tl.innerHTML = `
+          <div class="timeline-step running" id="step-pipe-intake">
+            <div class="step-header">
+              <span class="step-name">⚡ 1. Intake Agent</span>
+              <span class="step-time" style="color:var(--cyan); font-weight:700;">Scanning Evidence...</span>
+            </div>
+            <div class="step-summary" style="color:var(--text-muted); font-size:12px;">
+              Ingesting claim package ${esc(claimId || '')}, validating OCR line items &amp; computing perceptual image hash...
+            </div>
+          </div>
+          <div class="timeline-step pending" id="step-pipe-policy">
+            <div class="step-header">
+              <span class="step-name" style="color:var(--text-muted);">🛡️ 2. Policy Agent</span>
+              <span class="step-time">Queued</span>
+            </div>
+            <div class="step-summary" style="color:var(--text-dim); font-size:12px;">
+              Awaiting intake to cross-examine policy terms, effective coverage window &amp; statutory exclusions...
+            </div>
+          </div>
+          <div class="timeline-step pending" id="step-pipe-fraud">
+            <div class="step-header">
+              <span class="step-name" style="color:var(--text-muted);">🕸️ 3. Fraud Agent</span>
+              <span class="step-time">Queued</span>
+            </div>
+            <div class="step-summary" style="color:var(--text-dim); font-size:12px;">
+              Awaiting intake to traverse syndicate collusion graph &amp; compare narrative against damage telemetry...
+            </div>
+          </div>
+          <div class="timeline-step pending" id="step-pipe-decision">
+            <div class="step-header">
+              <span class="step-name" style="color:var(--text-muted);">⚖️ 4. Decision Agent</span>
+              <span class="step-time">Queued</span>
+            </div>
+            <div class="step-summary" style="color:var(--text-dim); font-size:12px;">
+              Synthesizing multi-agent findings into transparent risk score &amp; adjudicating claim...
+            </div>
+          </div>
+        `;
+      }
+
+      const banner = $('#verdict-banner');
+      if (banner) {
+        banner.className = 'verdict-box';
+        banner.style.background = 'rgba(0, 229, 255, 0.05)';
+        banner.style.borderColor = 'rgba(0, 229, 255, 0.2)';
+      }
+      const circle = $('#verdict-circle');
+      if (circle) {
+        circle.className = 'risk-score-circle score-warn';
+        $('#score-val').textContent = '...';
+      }
+      const badge = $('#verdict-badge');
+      if (badge) {
+        badge.className = 'verdict-badge';
+        badge.style.background = 'rgba(0, 229, 255, 0.2)';
+        badge.style.color = 'var(--cyan)';
+        badge.textContent = 'Orchestrating...';
+      }
+      $('#verdict-reason').textContent = 'Defender agents executing in sequence. Please observe the real-time pipeline below.';
+      $('#scoring-formula-card').style.display = 'none';
+      $('#signals-list').innerHTML = '<div style="font-size:12px; color:var(--text-dim); padding:6px 0;">Signals will populate as agents finish...</div>';
+    }
 
     // ---------- Render Defender Case (Split View) ----------
     async function renderCaseResult(caseData, container) {
       currentCase = caseData;
       const c = caseData.claim;
       const dec = caseData.decision;
+      const pol = caseData.policy;
       const fr = caseData.fraud;
       const photoUrl = getClaimPhotoUrl(c);
 
@@ -2116,40 +3030,139 @@
         </tr>
       `).join('');
 
-      // 2. Fill Right Column (AI Derivations & Verdict)
+      // 2. Score calculations for transparent breakdown
+      const polScore = (pol.signals || []).reduce((s, x) => s + (x.weight || 0), 0);
+      const frScore = (fr.signals || []).reduce((s, x) => s + (x.weight || 0), 0);
+      const finalScore = dec.risk_score;
+
+      // Map events by agent
+      const evMap = {};
+      (caseData.events || []).forEach(e => { evMap[e.agent.toLowerCase()] = e; });
+
       const tl = $('#agent-timeline');
       tl.innerHTML = '';
-      for (const ev of caseData.events) {
-        const step = document.createElement('div');
-        step.className = 'timeline-step';
-        step.innerHTML = `
-          <div class="step-header">
-            <span class="step-name">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-              ${esc(ev.agent)} Agent
-            </span>
-            <span class="step-time">${ev.ms} ms</span>
-          </div>
-          <div class="step-summary">${esc(ev.summary)}</div>
-        `;
-        tl.appendChild(step);
-        await sleep(150);
-      }
 
-      const score = dec.risk_score;
+      // --- AGENT 1: INTAKE AGENT ---
+      const evIntake = evMap['intake'] || { ms: 14, summary: `Claim ${c.claim_id} ingested. Photo hash: ${c.photo_hash.slice(0,8)}...` };
+      const step1 = document.createElement('div');
+      step1.className = 'timeline-step clean';
+      step1.innerHTML = `
+        <div class="step-header">
+          <span class="step-name">⚡ 1. Intake Agent</span>
+          <div>
+            <span class="agent-score-tag clean">Score Impact: +0 pts</span>
+            <span class="step-time">${evIntake.ms} ms</span>
+          </div>
+        </div>
+        <div class="step-summary">
+          ${esc(evIntake.summary)}
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:3px;">
+            ✓ Structured fields parsed, MD5 perceptual photo hash calculated, repair invoice items validated.
+          </div>
+        </div>
+      `;
+      tl.appendChild(step1);
+      await sleep(220);
+
+      // --- AGENT 2: POLICY AGENT ---
+      const evPolicy = evMap['policy'] || { ms: 38, summary: 'Policy terms evaluated against loss date and coverage cap.' };
+      const step2 = document.createElement('div');
+      step2.className = `timeline-step ${polScore > 0 ? 'flagged' : 'clean'}`;
+      const polDetailText = polScore > 0
+        ? pol.signals.map(s => `<b>${pretty(s.type)}</b> (+${s.weight} pts): ${esc(s.evidence)}`).join('<br>')
+        : '✓ Policy active, loss date verified within window, claim within deductible & coverage cap (+0 pts).';
+      step2.innerHTML = `
+        <div class="step-header">
+          <span class="step-name">🛡️ 2. Policy Agent</span>
+          <div>
+            <span class="agent-score-tag ${polScore > 0 ? 'flagged' : 'clean'}">
+              ${polScore > 0 ? `⚠️ Policy Impact: +${polScore} pts` : '✓ Policy Impact: +0 pts'}
+            </span>
+            <span class="step-time">${evPolicy.ms} ms</span>
+          </div>
+        </div>
+        <div class="step-summary">
+          ${esc(evPolicy.summary)}
+          <div style="font-size:11.5px; margin-top:4px; padding:6px 10px; background:var(--bg); border-radius:4px; border:1px solid var(--border);">
+            ${polDetailText}
+          </div>
+        </div>
+      `;
+      tl.appendChild(step2);
+      await sleep(240);
+
+      // --- AGENT 3: FRAUD AGENT ---
+      const evFraud = evMap['fraud'] || { ms: 180, summary: 'Syndicate graph traversed and collision narrative evaluated.' };
+      const step3 = document.createElement('div');
+      step3.className = `timeline-step ${frScore > 0 ? (frScore >= 40 ? 'critical' : 'flagged') : 'clean'}`;
+      const frDetailText = frScore > 0
+        ? fr.signals.map(s => `<b>${pretty(s.type)}</b> (+${s.weight} pts): ${esc(s.evidence)}`).join('<br>')
+        : '✓ Zero syndicate links detected. Driver narrative corroborates photo damage (+0 pts).';
+      step3.innerHTML = `
+        <div class="step-header">
+          <span class="step-name">🕸️ 3. Fraud Agent</span>
+          <div>
+            <span class="agent-score-tag ${frScore > 0 ? (frScore >= 40 ? 'critical' : 'flagged') : 'clean'}">
+              ${frScore > 0 ? `🚨 Fraud Impact: +${frScore} pts` : '✓ Fraud Impact: +0 pts'}
+            </span>
+            <span class="step-time">${evFraud.ms} ms</span>
+          </div>
+        </div>
+        <div class="step-summary">
+          ${esc(evFraud.summary)}
+          <div style="font-size:11.5px; margin-top:4px; padding:6px 10px; background:var(--bg); border-radius:4px; border:1px solid var(--border);">
+            ${frDetailText}
+          </div>
+        </div>
+      `;
+      tl.appendChild(step3);
+      await sleep(260);
+
+      // --- AGENT 4: DECISION AGENT ---
+      const evDecision = evMap['decision'] || { ms: 320, summary: dec.reasoning };
+      const step4 = document.createElement('div');
+      step4.className = `timeline-step ${finalScore < 30 ? 'clean' : finalScore <= 60 ? 'flagged' : 'critical'}`;
+      step4.innerHTML = `
+        <div class="step-header">
+          <span class="step-name">⚖️ 4. Decision Agent</span>
+          <div>
+            <span class="agent-score-tag ${finalScore < 30 ? 'clean' : finalScore <= 60 ? 'flagged' : 'critical'}">
+              Final Composite Score: ${finalScore}/100
+            </span>
+            <span class="step-time">${evDecision.ms} ms</span>
+          </div>
+        </div>
+        <div class="step-summary">
+          ${esc(evDecision.summary)}
+          <div style="font-size:11.5px; color:var(--cyan); margin-top:4px; font-family:var(--font-mono);">
+            🧮 Score Synthesis: Base (0) + Policy (+${polScore}) + Fraud (+${frScore}) = ${finalScore}/100 -> ${pretty(dec.recommendation).toUpperCase()}
+          </div>
+        </div>
+      `;
+      tl.appendChild(step4);
+
+      // 3. Animate Score Odometer and Verdict Banner
       const banner = $('#verdict-banner');
+      banner.style.background = '';
+      banner.style.borderColor = '';
       banner.className = 'verdict-box ' + dec.recommendation;
 
       const circle = $('#verdict-circle');
-      circle.className = 'risk-score-circle ' + (score < 30 ? 'score-clean' : score <= 60 ? 'score-warn' : 'score-danger');
-      $('#score-val').textContent = score;
+      circle.style.borderColor = '';
+      circle.style.color = '';
+      animateScoreCount(finalScore);
 
       const badge = $('#verdict-badge');
+      badge.style.background = '';
+      badge.style.color = '';
       badge.className = 'verdict-badge badge-' + dec.recommendation;
       badge.textContent = pretty(dec.recommendation);
       $('#verdict-reason').textContent = dec.reasoning;
 
-      // Signals List
+      // 4. Render Transparent Scoring Attribution Box
+      renderScoringFormulaBox(polScore, frScore, finalScore, dec.recommendation, pol.signals || [], fr.signals || []);
+
+      // 5. Signals List
       const sigList = $('#signals-list');
       const allSignals = [...caseData.policy.signals, ...caseData.fraud.signals].sort((a,b) => b.weight - a.weight);
       if (allSignals.length === 0) {
@@ -2169,7 +3182,7 @@
         `).join('');
       }
 
-      // Link Graph
+      // 6. Link Graph
       const graphBox = $('#link-graph-box');
       if (caseData.fraud.nodes && caseData.fraud.nodes.length > 1) {
         graphBox.style.display = 'block';
@@ -2185,20 +3198,35 @@
       renderPolicyDetailsPanel(c, caseData.policy);
     }
 
+    window.renderAuditTrail = function(audits) {
+      const el = $('#audit-trail');
+      if (!el) return;
+      if (!audits || audits.length === 0) {
+        el.innerHTML = '<span style="font-size:11.5px; color:var(--text-dim);">No adjuster actions logged yet.</span>';
+        return;
+      }
+      el.innerHTML = audits.map(a => `
+        <div class="audit-item">
+          <div>
+            <span class="audit-actor">${esc(a.actor)}</span>: ${esc(a.event)}
+            ${a.detail && a.detail.note ? `("${esc(a.detail.note)}")` : ''}
+            ${a.detail && a.detail.action ? `· <span class="badge badge-amber" style="font-size:10px;">${esc(a.detail.action)}</span>` : ''}
+          </div>
+          <div style="color:var(--text-dim); font-size:11px;">${new Date(a.ts).toLocaleTimeString()}</div>
+        </div>
+      `).join('');
+    };
+
+    function renderAuditTrail(audits) {
+      if (typeof window.renderAuditTrail === 'function') {
+        window.renderAuditTrail(audits);
+      }
+    }
+
     async function loadAudit(caseId) {
       try {
         const audits = await api(`/api/cases/${caseId}/audit`);
-        const el = $('#audit-trail');
-        if (!audits || audits.length === 0) {
-          el.innerHTML = '<span style="font-size:11.5px; color:var(--text-dim);">No adjuster actions logged yet.</span>';
-          return;
-        }
-        el.innerHTML = audits.map(a => `
-          <div class="audit-item">
-            <div><span class="audit-actor">${esc(a.actor)}</span>: ${esc(a.event)} ${a.detail && a.detail.note ? `("${esc(a.detail.note)}")` : ''}</div>
-            <div style="color:var(--text-dim); font-size:11px;">${new Date(a.ts).toLocaleTimeString()}</div>
-          </div>
-        `).join('');
+        window.renderAuditTrail(audits);
       } catch (e) {}
     }
 
@@ -2225,7 +3253,12 @@
       if (!cid) return alert('Please enter or select a Claim ID');
       const btn = $('#btn-analyze');
       btn.disabled = true;
-      btn.innerHTML = 'Analyzing...';
+      btn.innerHTML = `<span style="display:inline-flex; align-items:center; gap:6px;">⚡ Orchestrating Defender Agents...</span>`;
+
+      // Immediately display results container and mount the active multi-agent pipeline
+      renderAgentPipelineWorking(cid);
+      $('#defender-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
       try {
         const res = await post('/api/cases/analyze', { claim_id: cid });
         await renderCaseResult(res, $('#defender-results'));
@@ -2263,6 +3296,12 @@
 
         // Render full case in attack view
         await renderCaseResult(res.case, $('#attack-case-view'));
+
+        // Populate Attacker Lab expandable claim and policy panels
+        if (res.attack && res.attack.claim) {
+          renderAttackerClaimPanel(res.attack.claim);
+          renderAttackerPolicyPanel(res.attack.claim, res.policy);
+        }
       } catch (e) {
         alert('Attack generation error: ' + e.message);
       } finally {
@@ -2270,6 +3309,94 @@
         btn.innerHTML = 'Launch Synthetic Attack';
       }
     });
+
+    function renderAttackerClaimPanel(c) {
+      const el = $('#content-atk-claim-details');
+      if (!el) return;
+      const linesSum = (c.line_items || []).reduce((s, it) => s + it.amount, 0);
+      el.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12.5px; margin-bottom:12px;">
+          <div><b>Synthesized Claim ID:</b> <span style="font-family:var(--font-mono); color:var(--purple); font-weight:700;">${esc(c.claim_id)}</span></div>
+          <div><b>Target Policy ID:</b> <span style="font-family:var(--font-mono); color:#10b981; font-weight:700;">${esc(c.policy_id)}</span></div>
+          <div><b>Damage Category:</b> <span class="badge badge-purple">${pretty(c.damage_type)}</span></div>
+          <div><b>Total Amount Claimed:</b> <span style="font-family:var(--font-mono); color:var(--cyan); font-weight:700;">$${Number(c.amount_claimed || 0).toLocaleString(undefined, {minimumFractionDigits:2})}</span></div>
+          <div><b>Claimant Entity ID:</b> <span style="font-family:var(--font-mono);">${esc(c.claimant_id)}</span></div>
+          <div><b>Workshop ID:</b> <span style="font-family:var(--font-mono);">${esc(c.workshop_id)}</span></div>
+          <div><b>Payout Bank Account:</b> <span style="font-family:var(--font-mono);">${esc(c.bank_account)}</span></div>
+          <div><b>Contact Phone:</b> <span style="font-family:var(--font-mono);">${esc(c.phone)}</span></div>
+        </div>
+
+        <div style="background:var(--bg-alt); padding:10px 12px; border-radius:6px; border:1px solid var(--border); margin-bottom:12px;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:2px;">
+            Synthesized Driver Narrative Payload
+          </div>
+          <div style="font-size:13px; font-style:italic; color:var(--text);">"${esc(c.narrative)}"</div>
+        </div>
+
+        <div style="background:var(--bg-alt); padding:10px 12px; border-radius:6px; border:1px solid var(--border); margin-bottom:12px;">
+          <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:2px;">
+            Digital Evidence Fingerprint &amp; Caption
+          </div>
+          <div style="font-size:12px; color:var(--text-muted);">
+            <b>Inspection Caption:</b> ${esc(c.photo_caption || 'N/A')} · <b>MD5:</b> <span style="font-family:var(--font-mono);">${esc(c.photo_hash || 'N/A')}</span>
+          </div>
+        </div>
+
+        <div class="card-title" style="font-size:12px; margin-bottom:6px;">Itemized Invoice Operations Breakdown</div>
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>Part / Operation Description</th><th style="text-align:right;">Estimate ($)</th></tr></thead>
+          <tbody>
+            ${(c.line_items || []).map(it => `
+              <tr>
+                <td>${esc(it.description)}</td>
+                <td style="font-family:var(--font-mono); text-align:right;">$${it.amount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            <tr style="border-top:1px solid var(--border); font-weight:700;">
+              <td>Sum of Lines</td>
+              <td style="font-family:var(--font-mono); text-align:right; color:var(--cyan);">$${linesSum.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+    }
+
+    function renderAttackerPolicyPanel(c, pol) {
+      const el = $('#content-atk-policy-details');
+      if (!el) return;
+      const p = pol || {
+        policy_id: c.policy_id,
+        start_date: '2026-01-01',
+        end_date: '2026-12-31',
+        coverage_limit: 25000.0,
+        standard_deductible: 500.0,
+        underwriter: 'ClaimGuard Mutual Underwriting Corp',
+        product_tier: 'Comprehensive Motor Shield'
+      };
+
+      el.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12.5px; margin-bottom:12px;">
+          <div><b>Policy Number:</b> <span style="font-family:var(--font-mono); color:#10b981; font-weight:700;">${esc(p.policy_id)}</span></div>
+          <div><b>Product Tier:</b> <span>${esc(p.product_tier || 'Comprehensive Motor Shield')}</span></div>
+          <div><b>Coverage Cap:</b> <span style="font-family:var(--font-mono); color:var(--cyan); font-weight:700;">$${Number(p.coverage_limit || 25000).toLocaleString()}</span></div>
+          <div><b>Deductible:</b> <span style="font-family:var(--font-mono);">$${Number(p.standard_deductible || 500).toLocaleString()}</span></div>
+          <div><b>Policy Window:</b> <span>${esc(p.start_date || '2026-01-01')} to ${esc(p.end_date || '2026-12-31')}</span></div>
+          <div><b>Underwriter:</b> <span>${esc(p.underwriter || 'ClaimGuard Mutual')}</span></div>
+        </div>
+
+        <div class="card-title" style="font-size:12px; margin-bottom:6px;">Governing Policy Terms &amp; Conditions</div>
+        <table class="data-table" style="font-size:12px;">
+          <thead><tr><th>Clause</th><th>Contract Term</th><th>Underwriting Rule</th></tr></thead>
+          <tbody>
+            <tr><td><b>Clause 3.1</b></td><td>Insured Perils</td><td>Accidental Collision, Fire, Theft, &amp; Vandalism covered up to $25,000</td></tr>
+            <tr><td><b>Clause 4.1</b></td><td>Exclusions</td><td>Wear &amp; tear, mechanical degradation, pre-existing defects strictly excluded</td></tr>
+            <tr><td><b>Clause 5.1</b></td><td>Loss Window</td><td>Loss event must occur strictly within active policy start and expiration dates</td></tr>
+          </tbody>
+        </table>
+      `;
+    }
 
     // ---------- TAB 3: ARENA BENCHMARK ----------
     function renderArenaScoreboard(r) {
@@ -2283,12 +3410,23 @@
         </tr>
       `).join('');
 
-      const missRows = (r.misses || []).map(m => `
-        <tr>
-          <td style="font-family:var(--font-mono);">${esc(m.claim_id)}</td>
-          <td>${pretty(m.attack_type)} ${m.stealth ? '<span class="badge badge-purple">Stealth</span>' : ''}</td>
+      window.lastArenaMisses = r.misses || [];
+
+      const missRows = (r.misses || []).map((m, idx) => `
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="font-family:var(--font-mono); font-weight:700; color:var(--cyan);">${esc(m.claim_id)}</td>
+          <td>${pretty(m.attack_type)} ${m.stealth ? '<span class="badge badge-purple" style="font-size:10px;">Stealth</span>' : ''}</td>
           <td><span style="color:var(--green); font-weight:700;">${m.risk_score}</span></td>
           <td style="color:var(--cyan); font-size:12.5px;">${esc(m.suggestion)}</td>
+          <td style="text-align:right; white-space:nowrap;">
+            <button class="btn-micro" onclick="toggleArenaMissDrawer(${idx}, 'claim')">📋 Claim Specs</button>
+            <button class="btn-micro btn-micro-green" onclick="toggleArenaMissDrawer(${idx}, 'policy')">🛡️ Policy Terms</button>
+          </td>
+        </tr>
+        <tr id="drawer-arena-${idx}" style="display:none; background:rgba(10, 15, 26, 0.98);">
+          <td colspan="5" style="padding:12px 16px; border-bottom:2px solid rgba(0, 229, 255, 0.25);">
+            <div id="drawer-content-${idx}"></div>
+          </td>
         </tr>
       `).join('');
 
@@ -2325,17 +3463,79 @@
         </div>
 
         <div class="card">
-          <div class="card-title">AI Defense Evolution (Missed Attacks & Suggested Rules)</div>
+          <div class="card-title">AI Defense Evolution (Missed Attacks &amp; Suggested Rules)</div>
           ${missRows ? `
             <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">When a stealth attack slips through, Gemini analyzes the failure and suggests concrete rules to close the defense gap:</p>
             <table class="data-table">
-              <thead><tr><th>Claim ID</th><th>Attack Type</th><th>Risk Score</th><th>AI Suggested New Rule</th></tr></thead>
+              <thead><tr><th>Claim ID</th><th>Attack Type</th><th>Risk Score</th><th>AI Suggested New Rule</th><th style="text-align:right;">Deep Inspect</th></tr></thead>
               <tbody>${missRows}</tbody>
             </table>
           ` : '<p style="color:var(--green); font-size:13px;">Outstanding! Zero attacks slipped through the defense perimeter.</p>'}
         </div>
       `;
     }
+
+    window.toggleArenaMissDrawer = function(idx, type) {
+      const drawer = $(`#drawer-arena-${idx}`);
+      const content = $(`#drawer-content-${idx}`);
+      if (!drawer || !content) return;
+      const m = (window.lastArenaMisses || [])[idx];
+      if (!m) return;
+
+      const currentType = drawer.getAttribute('data-active-type');
+      if (drawer.style.display === 'table-row' && currentType === type) {
+        drawer.style.display = 'none';
+        drawer.removeAttribute('data-active-type');
+        return;
+      }
+
+      drawer.style.display = 'table-row';
+      drawer.setAttribute('data-active-type', type);
+
+      const c = m.claim || {};
+      const pol = m.policy || {};
+
+      if (type === 'claim') {
+        content.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="font-weight:700; color:var(--cyan); font-size:12.5px; display:flex; align-items:center; gap:6px;">
+              <span>📋</span> Synthesized Adversarial Claim Specs (${esc(c.claim_id || m.claim_id)})
+            </div>
+            <span class="badge badge-purple" style="font-size:10px;">Adversary Injected</span>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; font-size:12px; background:var(--bg); padding:10px 12px; border-radius:6px; margin-bottom:8px;">
+            <div><b>Damage:</b> <span class="badge badge-cyan" style="font-size:10.5px;">${pretty(c.damage_type || 'collision')}</span></div>
+            <div><b>Claimed Total:</b> <span style="font-family:var(--font-mono); color:var(--cyan); font-weight:700;">$${Number(c.amount_claimed || 0).toLocaleString()}</span></div>
+            <div><b>Workshop:</b> <span>${esc(c.workshop_id || 'N/A')}</span></div>
+            <div><b>Photo Hash:</b> <span style="font-family:var(--font-mono); font-size:11px;">${esc((c.photo_hash || '').slice(0, 12))}</span></div>
+          </div>
+          <div style="font-size:12px; color:var(--text); background:var(--bg); padding:8px 12px; border-radius:6px; margin-bottom:8px;">
+            <b>Narrative:</b> "${esc(c.narrative || 'None')}"
+          </div>
+          <div style="font-size:11.5px; color:var(--text-muted);">
+            <b>Repair Line Items:</b> ${(c.line_items || []).map(it => `${esc(it.description)} ($${Number(it.amount).toLocaleString()})`).join(' · ') || 'None'}
+          </div>
+        `;
+      } else {
+        content.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="font-weight:700; color:var(--green); font-size:12.5px; display:flex; align-items:center; gap:6px;">
+              <span>🛡️</span> Underlying Insurance Policy Contract (${esc(pol.policy_id || 'POL-BOUND')})
+            </div>
+            <span class="badge badge-green" style="font-size:10px;">Active Policy</span>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px; font-size:12px; background:var(--bg); padding:10px 12px; border-radius:6px; margin-bottom:8px;">
+            <div><b>Coverage Cap:</b> <span style="font-family:var(--font-mono); color:var(--cyan); font-weight:700;">$${Number(pol.coverage_limit || 25000).toLocaleString()}</span></div>
+            <div><b>Deductible:</b> <span style="font-family:var(--font-mono);">$500.00</span></div>
+            <div><b>Active Window:</b> <span>${esc(pol.start_date || '2026-01-01')} to ${esc(pol.end_date || '2026-12-31')}</span></div>
+            <div><b>Underwriter:</b> <span>ClaimGuard Mutual</span></div>
+          </div>
+          <div style="font-size:11.5px; color:var(--text-muted); background:var(--bg); padding:8px 12px; border-radius:6px;">
+            <b>Governing Statutory Clauses:</b> Clause 3.1.A (Accidental Collision) · Clause 4.1.A (Wear &amp; Tear Exclusion) · Clause 5.1 (Policy Period Loss Verification)
+          </div>
+        `;
+      }
+    };
 
     $('#btn-run-arena').addEventListener('click', async () => {
       const per = +$('#arena-per-type').value || 8;

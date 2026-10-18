@@ -15,10 +15,9 @@ def _load_dotenv() -> None:
             continue
         key, value = line.split("=", 1)
         val = value.strip().strip('"').strip("'")
-        if val:
-            os.environ[key.strip()] = val
-        elif key.strip() not in os.environ:
-            os.environ[key.strip()] = ""
+        k = key.strip()
+        if k not in os.environ:
+            os.environ[k] = val
 
 
 _load_dotenv()

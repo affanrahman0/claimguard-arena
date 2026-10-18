@@ -65,4 +65,18 @@ def test_api_endpoints(repo, monkeypatch):
         assert d["ok"] and len(d["audit"]) == 2
         launch = client.post("/api/attacks/launch", json={"attack_type": "invoice_tamper"}).json()
         assert launch["caught"] is True
+        assert "policy" in launch
+        assert "product_tier" in launch["policy"]
+
+        q_res = client.post(f"/api/cases/{r['case_id']}/copilot/questions").json()
+        assert len(q_res["questions"]) == 3
+        assert "target_signal" in q_res["questions"][0]
+
+        eval_res = client.post(f"/api/cases/{r['case_id']}/copilot/evaluate", json={
+            "question": q_res["questions"][0]["question"],
+            "claimant_answer": "The repair shop handled the photos and paperwork on my behalf."
+        }).json()
+        assert 0 <= eval_res["plausibility_score"] <= 100
+        assert len(eval_res["deception_markers"]) > 0
+
         assert client.get("/").status_code == 200
