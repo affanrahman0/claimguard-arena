@@ -277,23 +277,24 @@ def create_custom_claim(req: CreateClaimRequest):
     inc_date = date.fromisoformat(req.incident_date) if req.incident_date else date(2026, 6, 15)
     fld_date = date.fromisoformat(req.filed_date) if req.filed_date else inc_date + timedelta(days=1)
 
+    clean_damage_type = domain.normalize_damage_type(req.damage_type)
     if req.line_items:
         items = req.line_items
     else:
-        raw_items = domain.make_items(req.damage_type, req.amount_claimed, rnd)
+        raw_items = domain.make_items(clean_damage_type, req.amount_claimed, rnd)
         items = [LineItem(**it) for it in raw_items]
 
-    caption = req.photo_caption or domain.make_caption(req.damage_type, "front" if req.damage_type == "collision" else None)
+    caption = req.photo_caption or domain.make_caption(clean_damage_type, "front" if clean_damage_type == "collision" else None)
     photo_hash = req.photo_hash or hashlib.md5(f"{cid}-photo".encode()).hexdigest()[:16]
 
     # Resolve photo url
     if req.photo_url:
         p_url = req.photo_url
-    elif req.damage_type == "glass":
+    elif clean_damage_type == "glass":
         p_url = "/static/images/glass_crack.jpg"
-    elif req.damage_type == "wear_and_tear":
+    elif clean_damage_type == "wear_and_tear":
         p_url = "/static/images/wear_and_tear.jpg"
-    elif req.damage_type in ("vandalism", "theft"):
+    elif clean_damage_type in ("vandalism", "theft"):
         p_url = "/static/images/vandalism_scratch.jpg"
     elif "side" in req.narrative.lower():
         p_url = "/static/images/side_collision.jpg"
@@ -313,7 +314,7 @@ def create_custom_claim(req: CreateClaimRequest):
         phone=req.phone or f"SYN-PH-U{rnd.randint(1000, 9999)}",
         incident_date=inc_date,
         filed_date=fld_date,
-        damage_type=req.damage_type,
+        damage_type=clean_damage_type,
         amount_claimed=req.amount_claimed,
         narrative=req.narrative,
         photo_hash=photo_hash,

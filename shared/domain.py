@@ -72,8 +72,38 @@ COVER_CLAUSE = {"collision": "3.1", "theft": "3.2", "glass": "3.3", "fire": "3.3
 EXCLUSION_CLAUSE = {"wear_and_tear": "4.1", "mechanical_breakdown": "4.2"}
 
 
+VALID_DAMAGE_TYPES = list(PARTS.keys())
+
+
+def normalize_damage_type(dtype: str) -> str:
+    if not dtype:
+        return "collision"
+    d = str(dtype).strip().lower()
+    if d in PARTS:
+        return d
+    # Match keywords in natural language descriptions
+    if any(w in d for w in ("bump", "headlamp", "bonnet", "radiator", "fender", "collision", "crash", "smash", "dent", "hit", "front", "rear", "side")):
+        return "collision"
+    if any(w in d for w in ("glass", "windshield", "window")):
+        return "glass"
+    if any(w in d for w in ("scratch", "vandal", "key", "spray", "malicious")):
+        return "vandalism"
+    if any(w in d for w in ("stolen", "theft", "hijack", "stole")):
+        return "theft"
+    if "fire" in d or "burn" in d:
+        return "fire"
+    if "flood" in d or "water" in d or "submerge" in d:
+        return "flood"
+    if any(w in d for w in ("wear", "tyre", "tire", "brake", "pad")):
+        return "wear_and_tear"
+    if any(w in d for w in ("breakdown", "engine", "gearbox", "transmission", "mechanical")):
+        return "mechanical_breakdown"
+    return "collision"
+
+
 def catalog(damage_type: str) -> set[str]:
-    return {d.lower() for group in PARTS.get(damage_type, {}).values() for d in group}
+    clean_type = normalize_damage_type(damage_type)
+    return {d.lower() for group in PARTS.get(clean_type, {}).values() for d in group}
 
 
 def direction_of(text: str) -> set[str]:
@@ -82,8 +112,9 @@ def direction_of(text: str) -> set[str]:
 
 
 def make_items(dtype: str, total: float, rnd: random.Random, direction: str | None = None) -> list[dict]:
-    groups = PARTS[dtype]
-    if dtype == "collision":
+    clean_dtype = normalize_damage_type(dtype)
+    groups = PARTS.get(clean_dtype, PARTS["collision"])
+    if clean_dtype == "collision":
         direction = direction or rnd.choice(["front", "rear", "side"])
         first = rnd.choice(groups[direction])
         pool = [d for d in groups[direction] + groups["generic"] if d != first]

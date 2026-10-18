@@ -58,7 +58,11 @@ def _heuristic_extract(raw_text: str) -> ExtractedFields:
 
 def extract_fields(raw_text: str) -> tuple[ExtractedFields, str]:
     """Free-text claim form -> structured fields (Gemini or pattern fallback)."""
+    from shared import domain
     prompt = ("Extract the claim fields from this motor insurance claim form text. "
+              "Allowed damage_type values MUST be one of: 'collision', 'glass', 'vandalism', 'theft', 'fire', 'flood', 'wear_and_tear', 'mechanical_breakdown'. "
               "Use ISO dates (YYYY-MM-DD). If a field is missing use an empty string or 0.\n\n" + raw_text)
-    return llm.generate_json(prompt, ExtractedFields, lambda: _heuristic_extract(raw_text),
-                             system="You extract structured data. Return only the JSON.")
+    fields, source = llm.generate_json(prompt, ExtractedFields, lambda: _heuristic_extract(raw_text),
+                                       system="You extract structured data. Return only the JSON.")
+    fields.damage_type = domain.normalize_damage_type(fields.damage_type)
+    return fields, source
