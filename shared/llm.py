@@ -50,15 +50,25 @@ def generate_json(
     model: Optional[str] = None,
     temperature: float = 0.1,
 ) -> tuple[T, str]:
-    """Return (parsed_result, source) where source is 'gemini', 'mock' or 'fallback'."""
+    """Return (parsed_result, source) where source is 'gemini', 'mock' or 'fallback'.
+    Includes intelligent failover across candidate Gemini models if one hits quota exhaustion (429).
+    """
     if mode() == "mock":
         return mock(), "mock"
+
+    primary = model or config.MODEL_FAST
+    candidates = [primary]
+    # Pool of fast candidate models to failover to if primary hits quota or is busy
+    for alt in ("gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-3.7-flash"):
+        if alt not in candidates:
+            candidates.append(alt)
+
     last_err = None
-    for _ in range(2):  # one retry
+    for candidate_model in candidates:
         try:
             from google.genai import types
             resp = _get_client().models.generate_content(
-                model=model or config.MODEL_FAST,
+                model=candidate_model,
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     system_instruction=system or None,
@@ -73,5 +83,14 @@ def generate_json(
             return schema.model_validate_json(resp.text), "gemini"
         except Exception as exc:  # noqa: BLE001
             last_err = exc
-    log.warning("Gemini call failed (%s); using fallback", last_err)
+            err_msg = str(exc)
+            # If quota exhausted (429) or service busy (503), try next model in pool
+            if any(k in err_msg for k in ("429", "RESOURCE_EXHAUSTED", "503", "UNAVAILABLE", "quota")):
+                continue
+            # For schema/parsing errors, retry once or abort to fallback
+            break
+
+    # Clean short error summary to avoid terminal log flooding
+    summary = "Quota exceeded or service busy" if (last_err and ("429" in str(last_err) or "RESOURCE_EXHAUSTED" in str(last_err))) else str(last_err).split("\n")[0][:100]
+    log.warning("Gemini call failed (%s); using fallback", summary)
     return mock(), "fallback"
